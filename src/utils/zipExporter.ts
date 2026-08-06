@@ -22,8 +22,8 @@ export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: bo
   }
 
   const primaryPaper = suite.papers[0];
-  const gradeClean = primaryPaper.grade.replace(/\s+/g, '');
-  const examTypeClean = primaryPaper.examType.replace(/\s+/g, '_');
+  const gradeClean = (primaryPaper.grade || '').replace(/\s+/g, '');
+  const examTypeClean = (primaryPaper.examType || '').replace(/\s+/g, '_');
   const schoolClean = primaryPaper.adminInfo.schoolName
     .replace(/TRƯỜNG\s+THCS\s+/i, '')
     .replace(/\s+/g, '_');

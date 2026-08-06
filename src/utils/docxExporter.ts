@@ -46,7 +46,7 @@ export async function generateMatrixAndSpecDocx(suite: FullExamSuite, paper: Exa
             spacing: { after: 200, before: 200 },
             children: [
               new TextRun({
-                text: `MA TRẬN ĐỀ KIỂM TRA MÔN TIẾNG ANH ${paper.grade.toUpperCase()} - ${paper.examType.toUpperCase()}`,
+                text: `MA TRẬN ĐỀ KIỂM TRA MÔN TIẾNG ANH ${(paper.grade || '').toUpperCase()} - ${(paper.examType || '').toUpperCase()}`,
                 bold: true,
                 size: 28, // 14pt
                 font: FONT_FAMILY,
@@ -78,7 +78,7 @@ export async function generateMatrixAndSpecDocx(suite: FullExamSuite, paper: Exa
             spacing: { after: 200, before: 200 },
             children: [
               new TextRun({
-                text: `BẢN ĐẶC TẢ ĐỀ KIỂM TRA MÔN TIẾNG ANH ${paper.grade.toUpperCase()} - ${paper.examType.toUpperCase()}`,
+                text: `BẢN ĐẶC TẢ ĐỀ KIỂM TRA MÔN TIẾNG ANH ${(paper.grade || '').toUpperCase()} - ${(paper.examType || '').toUpperCase()}`,
                 bold: true,
                 size: 28, // 14pt
                 font: FONT_FAMILY,
@@ -186,7 +186,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
 
       if (isEssay) {
-        const promptLines = q.prompt.split('\n');
+        const promptLines = (q.prompt || '').split('\n');
         const firstLine = promptLines[0];
         const wordCountRegex = /(\([\d\-\s\.]+\s*words\))/i;
         const match = firstLine.match(wordCountRegex);
@@ -442,7 +442,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
       spacing: { after: 200, before: 150 },
       children: [
         new TextRun({
-          text: `ĐÁP ÁN & HƯỚNG DẪN CHẤM ĐỀ KIỂM TRA MÔN TIẾNG ANH ${paper.grade.toUpperCase()}`,
+          text: `ĐÁP ÁN & HƯỚNG DẪN CHẤM ĐỀ KIỂM TRA MÔN TIẾNG ANH ${(paper.grade || '').toUpperCase()}`,
           bold: true,
           size: 28,
           font: FONT_FAMILY,
@@ -676,7 +676,7 @@ function createHeaderBlock(schoolName: string, subTitle: string): Table {
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    text: schoolName.toUpperCase(),
+                    text: (schoolName || '').toUpperCase(),
                     bold: true,
                     size: 24,
                     font: FONT_FAMILY,
@@ -737,9 +737,9 @@ function createExamHeaderTable(
   code: string,
   durationMinutes: number
 ): Table {
-  const schoolUpper = schoolName.toUpperCase();
+  const schoolUpper = (schoolName || '').toUpperCase();
   const ubndText = schoolUpper.includes('ĐỒNG YÊN') ? 'UBND XÃ ĐỒNG YÊN' : 'UBND XÃ .............';
-  const gradeNum = grade.replace(/[^0-9]/g, '');
+  const gradeNum = (grade || '').replace(/[^0-9]/g, '');
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -801,7 +801,7 @@ function createExamHeaderTable(
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    text: `BÀI KIỂM TRA ĐÁNH GIÁ ${examType.toUpperCase()}`,
+                    text: `BÀI KIỂM TRA ĐÁNH GIÁ ${(examType || '').toUpperCase()}`,
                     bold: true,
                     size: 26, // 13pt
                     font: FONT_FAMILY,

@@ -133,7 +133,7 @@ export default function App() {
     if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
     try {
       const blob = await generateMatrixAndSpecDocx(suite, suite.papers[0]);
-      downloadBlob(blob, `Matran_Dacta_${suite.papers[0].grade.replace(/\s+/g, '')}.docx`);
+      downloadBlob(blob, `Matran_Dacta_${(suite.papers[0].grade || '').replace(/\s+/g, '')}.docx`);
       showToast('📥 Đã tải xuống tệp Matran_Dacta.docx!');
     } catch (e: any) {
       alert('Lỗi xuất file Word: ' + e.message);
@@ -151,7 +151,7 @@ export default function App() {
         paper.academicYear || '2026-2027',
         paper.grade
       );
-      downloadBlob(blob, `MaTran_DeKT_${paper.grade.replace(/\s+/g, '')}.xlsx`);
+      downloadBlob(blob, `MaTran_DeKT_${(paper.grade || '').replace(/\s+/g, '')}.xlsx`);
       showToast('📥 Đã tải xuống tệp MaTran.xlsx!');
     } catch (e: any) {
       alert('Lỗi xuất file Excel: ' + e.message);
@@ -169,7 +169,7 @@ export default function App() {
         paper.academicYear || '2026-2027',
         paper.grade
       );
-      downloadBlob(blob, `DacTa_DeKT_${paper.grade.replace(/\s+/g, '')}.xlsx`);
+      downloadBlob(blob, `DacTa_DeKT_${(paper.grade || '').replace(/\s+/g, '')}.xlsx`);
       showToast('📥 Đã tải xuống tệp DacTa.xlsx!');
     } catch (e: any) {
       alert('Lỗi xuất file Excel: ' + e.message);
@@ -202,7 +202,7 @@ export default function App() {
     try {
       const zipBlob = await exportExamSuiteZip(suite, showCognition);
       const paper0 = suite.papers[0];
-      const fileName = `BoDe_TiengAnh_${paper0.grade.replace(/\s+/g, '')}_${paper0.examType.replace(/\s+/g, '_')}.zip`;
+      const fileName = `BoDe_TiengAnh_${(paper0.grade || '').replace(/\s+/g, '')}_${(paper0.examType || '').replace(/\s+/g, '_')}.zip`;
       downloadBlob(zipBlob, fileName);
       showToast('📦 Đã đóng gói và tải xuống thành công bộ tệp ZIP chuẩn Nghị định 30 & Bộ GDĐT!');
     } catch (e: any) {

@@ -152,11 +152,11 @@ export async function generateMatrixExcel(
     let sharedStrings = await zip.file('xl/sharedStrings.xml')!.async('text');
     
     sharedStrings = sharedStrings
-      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, schoolName.toUpperCase())
+      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, (schoolName || '').toUpperCase())
       .replace(/2026-2027/g, academicYear)
-      .replace(/LỚP 8/g, grade.toUpperCase())
+      .replace(/LỚP 8/g, (grade || '').toUpperCase())
       .replace(/Giữa kì I/gi, examType)
-      .replace(/GIỮA HỌC KÌ I/gi, examType.toUpperCase());
+      .replace(/GIỮA HỌC KÌ I/gi, (examType || '').toUpperCase());
 
     zip.file('xl/sharedStrings.xml', sharedStrings);
     return await zip.generateAsync({ type: 'blob' });
@@ -189,11 +189,11 @@ export async function generateSpecificationExcel(
     let sharedStrings = await zip.file('xl/sharedStrings.xml')!.async('text');
     
     sharedStrings = sharedStrings
-      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, schoolName.toUpperCase())
+      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, (schoolName || '').toUpperCase())
       .replace(/2026-2027/g, academicYear)
-      .replace(/LỚP 8/g, grade.toUpperCase())
+      .replace(/LỚP 8/g, (grade || '').toUpperCase())
       .replace(/Giữa kì I/gi, examType)
-      .replace(/GIỮA HỌC KÌ I/gi, examType.toUpperCase());
+      .replace(/GIỮA HỌC KÌ I/gi, (examType || '').toUpperCase());
 
     zip.file('xl/sharedStrings.xml', sharedStrings);
     return await zip.generateAsync({ type: 'blob' });
