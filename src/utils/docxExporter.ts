@@ -119,7 +119,16 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
   // Render Sections
   let globalQuestionIndex = 1;
-  (Array.isArray(paper.sections) ? paper.sections : []).forEach((section) => {
+  const safeSections = Array.isArray(paper.sections) ? paper.sections : [];
+  const validSections = safeSections.filter(s => {
+    // Prevent AI-generated title header section
+    if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
+      return false;
+    }
+    return true;
+  });
+
+  validSections.forEach((section) => {
     children.push(
       new Paragraph({
         spacing: { before: 200, after: 100 },
@@ -204,8 +213,10 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
             new TextRun({ text: after, bold: true, size: 28, font: FONT_FAMILY })
           );
         } else {
+          // If the first line doesn't have word count, it's probably just a suggestion (e.g. "- Where is it?")
+          // so we don't need to make it bold like a title.
           childrenRuns.push(
-            new TextRun({ text: firstLine, bold: true, size: 28, font: FONT_FAMILY })
+            new TextRun({ text: firstLine, size: 26, font: FONT_FAMILY })
           );
         }
 

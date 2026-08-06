@@ -220,7 +220,13 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
           {(() => {
             let globalQIdx = 1;
             const safeSections = Array.isArray(currentPaper.sections) ? currentPaper.sections : [];
-            return safeSections.map((section, sIdx) => (
+            const validSections = safeSections.filter(s => {
+              if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
+                return false;
+              }
+              return true;
+            });
+            return validSections.map((section, sIdx) => (
               <div key={sIdx} className="space-y-3">
                 <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
                   {section.title}

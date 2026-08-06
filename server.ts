@@ -122,7 +122,7 @@ CẤU TRÚC ĐỀ KIỂM TRA GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) -
 - Part 5. Read the passage and choose the best answer for each question. (1.25 pts) -> Gồm 5 câu (28-32), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 8. Write a short paragraph (${wordCountRange} words) about a given topic. (1 pt) -> 1 câu yêu cầu tự luận viết đoạn văn (Không đánh số câu), kèm theo chính xác 4 câu gợi ý (suggestions/prompts).
+- Part 8. Write a short paragraph (${wordCountRange} words) about a given topic. (1 pt) -> 1 câu yêu cầu tự luận viết đoạn văn. TRƯỜNG type BẮT BUỘC LÀ "ESSAY". Ghi yêu cầu 1 lần ở instructions, phần prompt chỉ chứa đúng 4 câu gợi ý (tránh trùng lặp yêu cầu). Tuyệt đối KHÔNG đánh số câu 37.
 `;
     } else if (isFinalTerm) {
       examStructureRules = `
@@ -134,7 +134,7 @@ CẤU TRÚC ĐỀ KIỂM TRA CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - T
 - Part 5. Read the passage and choose the best answer for each question. (1.0 pt) -> Gồm 5 câu (28-32), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.4 pt) -> Gồm 2 câu (33-34), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.2 pt) -> Gồm 1 câu (câu 35), 0.2 điểm. Đáp án: A, B, C.
-- Part 8. Write a paragraph (${wordCountRange} words) about a given topic. (1.0 pt) -> 1 câu yêu cầu tự luận viết đoạn văn (Không đánh số câu), kèm theo chính xác 4 câu gợi ý (suggestions/prompts).
+- Part 8. Write a paragraph (${wordCountRange} words) about a given topic. (1.0 pt) -> 1 câu yêu cầu tự luận viết đoạn văn. TRƯỜNG type BẮT BUỘC LÀ "ESSAY". Ghi yêu cầu 1 lần ở instructions, phần prompt chỉ chứa đúng 4 câu gợi ý (tránh trùng lặp yêu cầu). Tuyệt đối KHÔNG đánh số câu 36/37.
 `;
     } else {
       examStructureRules = `
@@ -147,8 +147,8 @@ CẤU TRÚC ĐỀ KIỂM TRA 15 PHÚT (TỔNG ĐIỂM: 10.0 ĐIỂM):
 Nhiệm vụ của bạn là sinh BỘ ĐỀ KIỂM TRA CHUẨN ĐẦY ĐỦ gồm:
 1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề kiểm tra (${isFinalTerm ? '8.0' : '10.0'} điểm).
 2. Bảng Bản đặc tả đề kiểm tra (Specifications) chi tiết chuẩn Bộ GDĐT.
-3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới.
-4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng (câu 36 của Cuối kỳ, câu 37 của Giữa kỳ), bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng ${wordCountRange} từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
+3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới. Tuyệt đối KHÔNG đưa tiêu đề đề kiểm tra (như "ĐỀ KIỂM TRA CUỐI KỲ...") hay thông tin thời gian (như "Thời gian làm bài: 60 phút...") vào bất kỳ trường title hay instructions nào của sections. Sections chỉ chứa các Part nội dung.
+4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng, bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng ${wordCountRange} từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
 5. Luôn sinh ra 3 chủ đề nói (speakingTopics) bám sát các Unit học sinh đã học, mỗi chủ đề gồm: tên chủ đề (topicName), mô tả tình huống bằng tiếng Anh (description), 3 câu hỏi gợi ý bằng tiếng Anh (guideQuestions) và 3 câu trả lời mẫu gợi ý tương ứng (suggestedAnswers).
 
 YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC NGHIỆM:
