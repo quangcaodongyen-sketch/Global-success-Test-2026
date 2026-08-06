@@ -242,45 +242,9 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
                             if (q.type === 'ESSAY') {
-                              const lines = (q.prompt || '').split('\n');
-                              const firstLine = lines[0] || '';
-                              const match = firstLine.match(/(\([\d\-\s\.]+\s*words\))/i);
-
-                              let firstLineEl;
-                              if (match && match.index !== undefined) {
-                                const before = firstLine.substring(0, match.index);
-                                const wordCount = match[1];
-                                const after = firstLine.substring(match.index + wordCount.length);
-                                firstLineEl = (
-                                  <span className="font-bold">
-                                    {before}
-                                    <span className="text-red-600 font-bold">{wordCount}</span>
-                                    {after}
-                                  </span>
-                                );
-                              } else {
-                                firstLineEl = <span className="font-bold">{firstLine}</span>;
-                              }
-
                               return (
                                 <>
-                                  {firstLineEl}
-                                  {showCognition && (
-                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
-                                      [{q.points}đ - {q.cognitionLevel}]
-                                    </span>
-                                  )}
-                                  {lines.slice(1).map((l, idx) => (
-                                    <div key={idx} className="mt-1 text-slate-700 font-sans whitespace-pre-wrap pl-2">
-                                      {l}
-                                    </div>
-                                  ))}
-                                </>
-                              );
-                            } else {
-                              return (
-                                <>
-                                  <span>{q.prompt}</span>
+                                  <span className="font-bold">{q.prompt}</span>
                                   {showCognition && (
                                     <span className="text-[11px] text-slate-500 font-sans italic ml-1">
                                       [{q.points}đ - {q.cognitionLevel}]
@@ -289,6 +253,16 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                                 </>
                               );
                             }
+                            return (
+                              <>
+                                <span>{q.prompt}</span>
+                                {showCognition && (
+                                  <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                                    [{q.points}đ - {q.cognitionLevel}]
+                                  </span>
+                                )}
+                              </>
+                            );
                           })()}
                         </p>
 

@@ -159,14 +159,6 @@ YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC N
   + Lựa chọn B: "F" (ví dụ: {"key": "B", "text": "F"})
   (Tức là không viết nguyên chữ "True"/"False" hay "Đúng"/"Sai" ở phần text của options).
 
-YÊU CẦU ĐỐI VỚI BÀI VIẾT LUẬN CUỐI CÙNG (PART 8):
-- Phần 'prompt' của câu hỏi viết luận này BẮT BUỘC chỉ được chứa duy nhất:
-  1. Đúng 1 câu yêu cầu viết đoạn văn bằng tiếng Anh (ví dụ: "Write a paragraph (${wordCountRange} words) about...").
-  2. Tiếp theo ngay dưới là danh sách gợi ý gồm đúng 4 ý ngắn gọn (mỗi ý từ 2-4 từ) được bố trí theo định dạng:
-     - Suggested ideas:
-     + [Gợi ý 1]                  + [Gợi ý 2]
-     + [Gợi ý 3]                  + [Gợi ý 4]
-- TUYỆT ĐỐI không viết thêm bất kỳ câu dẫn dắt, giải thích hay đoạn văn dài dòng nào khác trong phần đề bài này.
 
 
 Yêu cầu cấu trúc và biểu điểm bắt buộc:
