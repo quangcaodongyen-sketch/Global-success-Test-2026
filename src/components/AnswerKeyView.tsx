@@ -57,7 +57,7 @@ export const AnswerKeyView: React.FC<AnswerKeyViewProps> = ({ paper, onDownloadD
             <thead className="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
               <tr>
                 <th className="p-2.5 border-r border-slate-200 text-center w-12">Câu</th>
-                <th className="p-2.5 border-r border-slate-200">Phần Thi</th>
+                <th className="p-2.5 border-r border-slate-200">Phần Kiểm tra</th>
                 <th className="p-2.5 border-r border-slate-200 text-center w-28 bg-emerald-100/70 text-emerald-900">
                   Đáp Án Chuẩn
                 </th>

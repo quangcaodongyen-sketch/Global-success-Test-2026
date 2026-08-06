@@ -434,9 +434,9 @@ export const DEFAULT_ADMIN_INFO: Record<Grade, AdminInfo> = {
 };
 
 export const EXAM_TYPE_DURATION: Record<ExamType, number> = {
-  '15 phút': 15,
+  'Kiểm tra 15 phút': 15,
   'Giữa kỳ 1': 60,
-  'Giữa kỳ 2': 60,
   'Cuối kỳ 1': 60,
+  'Giữa kỳ 2': 60,
   'Cuối kỳ 2': 60
 };

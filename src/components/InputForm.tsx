@@ -185,7 +185,7 @@ export const InputForm: React.FC<InputFormProps> = ({
           </label>
           <div className="flex flex-wrap gap-2">
             {[
-              { val: '15 phút', label: 'Kiểm tra 15 phút', activeClass: 'bg-emerald-600 text-white border-emerald-600', inactiveClass: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70' },
+              { val: 'Kiểm tra 15 phút', label: 'Kiểm tra 15 phút', activeClass: 'bg-emerald-600 text-white border-emerald-600', inactiveClass: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70' },
               { val: 'Giữa kỳ 1', label: 'Giữa kỳ 1', activeClass: 'bg-sky-600 text-white border-sky-600', inactiveClass: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100/70' },
               { val: 'Cuối kỳ 1', label: 'Cuối kỳ 1', activeClass: 'bg-indigo-600 text-white border-indigo-600', inactiveClass: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100/70' },
               { val: 'Giữa kỳ 2', label: 'Giữa kỳ 2', activeClass: 'bg-rose-600 text-white border-rose-600', inactiveClass: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100/70' },

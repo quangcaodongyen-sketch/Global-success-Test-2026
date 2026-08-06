@@ -1,10 +1,10 @@
 export type Grade = 'Lớp 6' | 'Lớp 7' | 'Lớp 8' | 'Lớp 9';
 
 export type ExamType = 
-  | '15 phút'
+  | 'Kiểm tra 15 phút'
   | 'Giữa kỳ 1'
-  | 'Giữa kỳ 2'
   | 'Cuối kỳ 1'
+  | 'Giữa kỳ 2'
   | 'Cuối kỳ 2';
 
 export interface AdminInfo {

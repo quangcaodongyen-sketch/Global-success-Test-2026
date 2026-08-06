@@ -40,8 +40,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
   if (!currentPaper) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl flex flex-col items-center justify-center text-center space-y-3">
-        <h3 className="font-bold text-lg">Lỗi tải dữ liệu Đề Thi</h3>
-        <p className="text-sm">Hệ thống AI không trả về cấu trúc đề thi hợp lệ. Vui lòng thử bấm nút "Tạo Bộ Đề Mới" lại một lần nữa.</p>
+        <h3 className="font-bold text-lg">Lỗi tải dữ liệu Đề kiểm tra</h3>
+        <p className="text-sm">Hệ thống AI không trả về cấu trúc đề kiểm tra hợp lệ. Vui lòng thử bấm nút "Tạo Bộ Đề Mới" lại một lần nữa.</p>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-200 pb-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-bold text-slate-700 uppercase tracking-wider mr-1">
-            Mã Đề Thi:
+            Mã Đề:
           </span>
           {safePapers.map((paper) => (
             <button
@@ -169,9 +169,9 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
           <div className="text-left sm:text-right flex flex-col justify-between">
             <div>
               <p className="font-bold text-base sm:text-lg text-slate-900 tracking-wider">
-                MÃ ĐỀ THI: <span className="text-indigo-700">{currentPaper.code}</span>
+                MÃ ĐỀ: <span className="text-indigo-700">{currentPaper.code}</span>
               </p>
-              <p className="text-xs italic text-slate-600">(Đề thi gồm 02-03 trang)</p>
+              <p className="text-xs italic text-slate-600">(Đề kiểm tra gồm 02-03 trang)</p>
             </div>
           </div>
         </div>

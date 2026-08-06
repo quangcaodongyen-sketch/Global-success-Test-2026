@@ -89,12 +89,12 @@ ${uploadedTemplates
   )
   .join('\n\n')}
 
-YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ THI TỪ MẪU:
+YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ KIỂM TRA TỪ MẪU:
 1. ĐỦ CÁC PART / SECTION: Phải có đầy đủ tất cả các Part/Section như mẫu đưa lên (VD: PART 1, PART 2, PART 3, PART 4... hoặc SECTION A, SECTION B...).
-2. ĐỦ SỐ LƯỢNG CÂU HỎI TRONG MỖI PART: Đếm chính xác số câu hỏi ở từng Part trong mẫu và tạo ĐÚNG số lượng câu hỏi đó cho từng Part tương ứng trong đề thi mới.
+2. ĐỦ SỐ LƯỢNG CÂU HỎI TRONG MỖI PART: Đếm chính xác số câu hỏi ở từng Part trong mẫu và tạo ĐÚNG số lượng câu hỏi đó cho từng Part tương ứng trong đề kiểm tra mới.
 3. ĐÁNH SỐ THỰC TẾ THEO MẪU: Đánh số câu hỏi liên tục hoặc theo kí hiệu phần (VD: 1, 2, 3... hoặc Question 1, Question 2...).
 4. SỐ LƯỢNG ĐÁP ÁN MỖI CÂU (2 HOẶC 3 ĐÁP ÁN - TUYỆT ĐỐI KHÔNG CÓ ĐÁP ÁN D): Mỗi câu trắc nghiệm chỉ được có tối đa 3 lựa chọn (A, B hoặc A, B, C). Không tạo đáp án D cho bất kỳ câu hỏi nào.
-5. TỰ NHẬN DIỆN VÀ GHI ĐÚNG LOẠI BÀI KIỂM TRA: Tự nhận diện đúng loại bài kiểm tra (15 phút, Giữa kỳ 1, Giữa kỳ 2, Cuối kỳ 1, Cuối kỳ 2) từ tiêu đề tệp mẫu để ghi chính xác vào tiêu đề đề thi.
+5. TỰ NHẬN DIỆN VÀ GHI ĐÚNG LOẠI BÀI KIỂM TRA: Tự nhận diện đúng loại bài kiểm tra (Kiểm tra 15 phút, Giữa kỳ 1, Giữa kỳ 2, Cuối kỳ 1, Cuối kỳ 2) từ tiêu đề tệp mẫu để ghi chính xác vào tiêu đề đề kiểm tra.
 =====================================================
 `;
     }
@@ -114,7 +114,7 @@ YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ THI TỪ MẪU:
     let examStructureRules = '';
     if (isMidTerm) {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
+CẤU TRÚC ĐỀ KIỂM TRA GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
 - Part 1. Listen and circle the best answer A, B or C. You will listen TWICE. (1.25 pts) -> Gồm 5 câu (1-5), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 2. Listen and decide if each statement is True (T) or False (F). (1.25 pts) -> Gồm 5 câu (6-10), mỗi câu 0.25 điểm. Đáp án: A. True, B. False.
 - Part 3. Choose A, B, or C to complete the following sentences. (3.0 pts) -> Gồm 12 câu (11-22), mỗi câu 0.25 điểm. Đáp án: A, B, C.
@@ -122,11 +122,11 @@ CẤU TRÚC ĐỀ THI GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT 
 - Part 5. Read the passage and choose the best answer for each question. (1.25 pts) -> Gồm 5 câu (28-32), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 8. Write a short paragraph (${wordCountRange} words) about a given topic. (1 pt) -> 1 câu tự luận viết đoạn văn (Không đánh số câu).
+- Part 8. Write a short paragraph (${wordCountRange} words) about a given topic. (1 pt) -> 1 câu yêu cầu tự luận viết đoạn văn (Không đánh số câu), kèm theo chính xác 4 câu gợi ý (suggestions/prompts).
 `;
     } else if (isFinalTerm) {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG ĐIỂM TOÀN BÀI CẢ NÓI LÀ 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
+CẤU TRÚC ĐỀ KIỂM TRA CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG ĐIỂM TOÀN BÀI CẢ NÓI LÀ 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
 - Part 1. Listen and circle the best answer A, B or C. You will listen TWICE. (1.0 pt) -> Gồm 5 câu (1-5), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 2. Listen and decide if each statement is True (T) or False (F). (1.0 pt) -> Gồm 5 câu (6-10), mỗi câu 0.2 điểm. Đáp án: A. True, B. False.
 - Part 3. Choose A, B, or C to complete the following sentences. (2.4 pts) -> Gồm 12 câu (11-22), mỗi câu 0.2 điểm. Đáp án: A, B, C.
@@ -134,25 +134,25 @@ CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG �
 - Part 5. Read the passage and choose the best answer for each question. (1.0 pt) -> Gồm 5 câu (28-32), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.4 pt) -> Gồm 2 câu (33-34), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.2 pt) -> Gồm 1 câu (câu 35), 0.2 điểm. Đáp án: A, B, C.
-- Part 8. Write a paragraph (${wordCountRange} words) about a given topic. (1.0 pt) -> 1 câu tự luận viết đoạn văn (Không đánh số câu).
+- Part 8. Write a paragraph (${wordCountRange} words) about a given topic. (1.0 pt) -> 1 câu yêu cầu tự luận viết đoạn văn (Không đánh số câu), kèm theo chính xác 4 câu gợi ý (suggestions/prompts).
 `;
     } else {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI 15 PHÚT (TỔNG ĐIỂM: 10.0 ĐIỂM):
+CẤU TRÚC ĐỀ KIỂM TRA 15 PHÚT (TỔNG ĐIỂM: 10.0 ĐIỂM):
 - Gồm 10 câu trắc nghiệm khách quan (1-10), mỗi câu 1.0 điểm. Lựa chọn đáp án A, B hoặc C.
 `;
     }
 
-    const systemPrompt = `Bạn là một Chuyên gia Biên soạn Đề thi và Khảo thí Tiếng Anh THCS uy tín theo chương trình sách giáo khoa Global Success của Bộ Giáo dục và Đào tạo Việt Nam.
+    const systemPrompt = `Bạn là một Chuyên gia Biên soạn Đề kiểm tra và Khảo thí Tiếng Anh THCS uy tín theo chương trình sách giáo khoa Global Success của Bộ Giáo dục và Đào tạo Việt Nam.
 Nhiệm vụ của bạn là sinh BỘ ĐỀ KIỂM TRA CHUẨN ĐẦY ĐỦ gồm:
-1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề thi (${isFinalTerm ? '8.0' : '10.0'} điểm).
+1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề kiểm tra (${isFinalTerm ? '8.0' : '10.0'} điểm).
 2. Bảng Bản đặc tả đề kiểm tra (Specifications) chi tiết chuẩn Bộ GDĐT.
 3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới.
 4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng (câu 36 của Cuối kỳ, câu 37 của Giữa kỳ), bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng ${wordCountRange} từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
 5. Luôn sinh ra 3 chủ đề nói (speakingTopics) bám sát các Unit học sinh đã học, mỗi chủ đề gồm: tên chủ đề (topicName), mô tả tình huống bằng tiếng Anh (description), 3 câu hỏi gợi ý bằng tiếng Anh (guideQuestions) và 3 câu trả lời mẫu gợi ý tương ứng (suggestedAnswers).
 
 YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC NGHIỆM:
-- Tất cả các câu hỏi trắc nghiệm trong đề thi chỉ được phép có từ 2 đến 3 đáp án lựa chọn (True/False là 2 đáp án A/B; các câu MCQ khác là 3 đáp án A/B/C).
+- Tất cả các câu hỏi trắc nghiệm trong đề kiểm tra chỉ được phép có từ 2 đến 3 đáp án lựa chọn (True/False là 2 đáp án A/B; các câu MCQ khác là 3 đáp án A/B/C).
 - TUYỆT ĐỐI KHÔNG ĐƯỢC có đáp án thứ 4 (không có đáp án D).
 - Đối với câu hỏi Đúng/Sai (True/False), hai lựa chọn đáp án bắt buộc phải để dưới dạng viết tắt:
   + Lựa chọn A: "T" (ví dụ: {"key": "A", "text": "T"})
@@ -165,6 +165,7 @@ Yêu cầu cấu trúc và biểu điểm bắt buộc:
 ${examStructureRules}
 
 Yêu cầu nội dung:
+- Các câu hỏi từ vựng phải thật ngắn gọn để toàn bộ câu hỏi và đáp án có thể hiển thị trên cùng 1 dòng.
 - Khối lớp: ${grade} (Global Success)
 - Loại đề: ${examType}
 - Thời gian làm bài: ${adminInfo?.durationMinutes || 45} phút

@@ -243,6 +243,22 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
             );
           }
         }
+
+        // Add 8 dotted lines for student's writing area
+        for (let i = 0; i < 8; i++) {
+          children.push(
+            new Paragraph({
+              spacing: { before: 120, after: 120 },
+              children: [
+                new TextRun({
+                  text: '.......................................................................................................................................',
+                  size: 26,
+                  font: FONT_FAMILY,
+                }),
+              ],
+            })
+          );
+        }
       } else {
         children.push(
           new Paragraph({
@@ -1405,7 +1421,7 @@ function createCompactAnswerGridTable(paper: ExamPaper): Table {
 }
 
 function createAnswerKeyTable(paper: ExamPaper): Table {
-  const headers = ['Câu', 'Phần thi', 'Đáp án chuẩn', 'Điểm', 'Giải thích chi tiết'];
+  const headers = ['Câu', 'Phần kiểm tra', 'Đáp án chuẩn', 'Điểm', 'Giải thích chi tiết'];
 
   const headerCells = headers.map(
     (h) =>

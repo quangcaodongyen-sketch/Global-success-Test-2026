@@ -100,7 +100,7 @@ export default function App() {
       setSuite(result.data);
       setActivePaperCode('001');
       setActiveTab('exam');
-      showToast('🎉 Đã tự động sinh bộ đề chuẩn Ma trận, Bản đặc tả & Đề thi Mã 001 thành công!');
+      showToast('🎉 Đã tự động sinh bộ đề chuẩn Ma trận, Bản đặc tả & Đề kiểm tra Mã 001 thành công!');
     } catch (err: any) {
       alert(err.message || 'Lỗi khi kết nối với máy chủ sinh đề. Vui lòng thử lại.');
     } finally {
@@ -292,7 +292,7 @@ export default function App() {
                       }`}
                     >
                       <FileText className="w-4 h-4" />
-                      <span>1. Đề Thi ({Array.isArray(suite.papers) ? suite.papers.length : 0} mã)</span>
+                      <span>1. Đề Kiểm tra ({Array.isArray(suite.papers) ? suite.papers.length : 0} mã)</span>
                     </button>
 
                     <button
@@ -339,7 +339,7 @@ export default function App() {
                       <div>
                         <p className="text-xs font-bold">Xuất Trọn Bộ Hồ Sơ Nghị Định 30 (.ZIP)</p>
                         <p className="text-[11px] text-indigo-200">
-                          Bao gồm Ma trận, Bản đặc tả, tất cả Đề thi và Đáp án dạng .docx
+                          Bao gồm Ma trận, Bản đặc tả, tất cả Đề kiểm tra và Đáp án dạng .docx
                         </p>
                       </div>
                     </div>
@@ -452,7 +452,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 text-center space-y-1">
           <p>© 2026 Hệ Thống Tự Động Sinh Đề Kiểm Tra Tiếng Anh THCS (Global Success)</p>
           <p className="text-[11px] text-slate-500">
-            Hỗ trợ giáo viên biên soạn Ma trận, Bản đặc tả, Đề thi và Đáp án tuân thủ Nghị định 30/2020/NĐ-CP & Bộ GDĐT
+            Hỗ trợ giáo viên biên soạn Ma trận, Bản đặc tả, Đề kiểm tra và Đáp án tuân thủ Nghị định 30/2020/NĐ-CP & Bộ GDĐT
           </p>
         </div>
       </footer>

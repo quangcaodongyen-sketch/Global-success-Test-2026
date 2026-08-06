@@ -21,7 +21,7 @@ export const Decree30InfoModal: React.FC<Decree30InfoModalProps> = ({ isOpen, on
             </div>
             <div>
               <h2 className="text-base font-bold">Quy Định Kỹ Thuật Thể Thức Văn Bản Hành Chính</h2>
-              <p className="text-xs text-indigo-200">Theo Nghị định 30/2020/NĐ-CP & Quy định Biên soạn đề thi Bộ GDĐT</p>
+              <p className="text-xs text-indigo-200">Theo Nghị định 30/2020/NĐ-CP & Quy định Biên soạn đề kiểm tra Bộ GDĐT</p>
             </div>
           </div>
           <button
@@ -80,7 +80,7 @@ export const Decree30InfoModal: React.FC<Decree30InfoModalProps> = ({ isOpen, on
             <div className="space-y-2 leading-relaxed">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <p className="font-bold text-indigo-900 mb-1">Khung Tiêu Đề Hành Chính:</p>
-                <p>Cột trái ghi Tên Trường & Tên Đề kiểm tra. Cột phải ghi Mã đề thi & khung Thời gian làm bài.</p>
+                <p>Cột trái ghi Tên Trường & Tên Đề kiểm tra. Cột phải ghi Mã đề & khung Thời gian làm bài.</p>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
@@ -89,7 +89,7 @@ export const Decree30InfoModal: React.FC<Decree30InfoModalProps> = ({ isOpen, on
               </div>
 
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="font-bold text-indigo-900 mb-1">Cấu Trúc Đóng Gói Hồ Sơ Đề Thi (.ZIP):</p>
+                <p className="font-bold text-indigo-900 mb-1">Cấu Trúc Đóng Gói Hồ Sơ Đề Kiểm Tra (.ZIP):</p>
                 <p>Gồm đầy đủ 3 thành phần tệp văn bản độc lập: Matran_Dacta.docx, các file Detap_MaDeXXX.docx và DapAn_HuongDanCham.docx kèm Danh mục hồ sơ kiểm tra theo quy định.</p>
               </div>
             </div>
