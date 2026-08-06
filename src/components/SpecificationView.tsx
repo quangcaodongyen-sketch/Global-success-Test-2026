@@ -5,11 +5,13 @@ import { FileText, Download, CheckCircle2 } from 'lucide-react';
 interface SpecificationViewProps {
   specifications: SpecificationItem[];
   onDownloadDocx: () => void;
+  onDownloadExcel: () => void;
 }
 
 export const SpecificationView: React.FC<SpecificationViewProps> = ({
   specifications,
   onDownloadDocx,
+  onDownloadExcel,
 }) => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-5">
@@ -26,13 +28,23 @@ export const SpecificationView: React.FC<SpecificationViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onDownloadDocx}
-          className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-xs cursor-pointer self-start sm:self-auto"
-        >
-          <Download className="w-4 h-4" />
-          <span>Tải File Word Matran_Dacta.docx</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={onDownloadDocx}
+            className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-xs cursor-pointer self-start sm:self-auto"
+          >
+            <Download className="w-4 h-4" />
+            <span>Tải File Word Matran_Dacta.docx</span>
+          </button>
+          
+          <button
+            onClick={onDownloadExcel}
+            className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-xs cursor-pointer self-start sm:self-auto"
+          >
+            <Download className="w-4 h-4" />
+            <span>Tải Excel DacTa.xls</span>
+          </button>
+        </div>
       </div>
 
       {/* Specifications Table */}

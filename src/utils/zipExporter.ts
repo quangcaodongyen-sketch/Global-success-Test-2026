@@ -5,6 +5,10 @@ import {
   generateExamPaperDocx,
   generateAnswerKeyDocx,
 } from './docxExporter';
+import {
+  generateMatrixExcel,
+  generateSpecificationExcel,
+} from './excelExporter';
 
 /**
  * Packages all Word documents into a ZIP file following Decree 30/2020/NĐ-CP
@@ -31,10 +35,27 @@ export async function exportExamSuiteZip(suite: FullExamSuite): Promise<Blob> {
   const matrixSpecBlob = await generateMatrixAndSpecDocx(suite, primaryPaper);
   rootFolder.file(`01_Matran_Dacta_${gradeClean}_${examTypeClean}.docx`, matrixSpecBlob);
 
+  // 1.1 Excel versions of Matrix & Spec
+  const matrixExcelBlob = generateMatrixExcel(
+    suite.matrix,
+    primaryPaper.schoolName || primaryPaper.adminInfo.schoolName,
+    primaryPaper.examType,
+    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear
+  );
+  rootFolder.file(`01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xls`, matrixExcelBlob);
+
+  const specExcelBlob = generateSpecificationExcel(
+    suite.specifications,
+    primaryPaper.schoolName || primaryPaper.adminInfo.schoolName,
+    primaryPaper.examType,
+    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear
+  );
+  rootFolder.file(`01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xls`, specExcelBlob);
+
   // 2. Detap_MaDeXXX.docx for each paper variant
   for (const paper of suite.papers) {
     const examPaperBlob = await generateExamPaperDocx(paper);
-    rootFolder.file(`02_Detap_MaDe${paper.code}.docx`, examPaperBlob);
+    rootFolder.file(`02_DeKiemTra_MaDe${paper.code}.docx`, examPaperBlob);
 
     // 3. DapAn_HuongDanCham_MaDeXXX.docx
     const answerKeyBlob = await generateAnswerKeyDocx(paper);
@@ -58,8 +79,10 @@ HỒ SƠ BỘ ĐỀ KIỂM TRA MÔN TIẾNG ANH THCS (GLOBAL SUCCESS)
 - Số lượng mã đề đã tạo: ${suite.papers.length} (Mã đề: ${suite.papers.map((p) => p.code).join(', ')})
 
 2. THÀNH PHẦN HỒ SƠ TỆP NÉN:
-- 01_Matran_Dacta_${gradeClean}_${examTypeClean}.docx : Bảng Ma trận & Bản đặc tả chi tiết.
-${suite.papers.map((p) => `- 02_Detap_MaDe${p.code}.docx : Đề thi học sinh Mã đề ${p.code}.\n- 03_DapAn_HuongDanCham_MaDe${p.code}.docx : Đáp án & Hướng dẫn chấm Mã đề ${p.code}.`).join('\n')}
+- 01_Matran_Dacta_${gradeClean}_${examTypeClean}.docx : Bảng Ma trận & Bản đặc tả chi tiết dạng Word.
+- 01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xls : Ma trận đề kiểm tra dạng Excel.
+- 01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xls : Bản đặc tả đề kiểm tra dạng Excel.
+${suite.papers.map((p) => `- 02_DeKiemTra_MaDe${p.code}.docx : Đề kiểm tra học sinh Mã đề ${p.code}.\n- 03_DapAn_HuongDanCham_MaDe${p.code}.docx : Đáp án & Hướng dẫn chấm Mã đề ${p.code}.`).join('\n')}
 
 3. TIÊU CHUẨN THỂ THỨC VĂN BẢN (NGHỊ ĐỊNH 30/2020/NĐ-CP):
 - Phông chữ: Times New Roman, cỡ chữ 14pt (hoặc 12-13pt đối với bảng biểu).

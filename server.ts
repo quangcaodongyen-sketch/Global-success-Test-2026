@@ -106,26 +106,26 @@ YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ THI TỪ MẪU:
     if (isMidTerm) {
       examStructureRules = `
 CẤU TRÚC ĐỀ THI GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
-- Part 1. Listen and decide if each statement is True (T) or False (F). (1.25 pts) -> Gồm 5 câu (1-5), mỗi câu 0.25 điểm. Đáp án: A. True, B. False.
-- Part 2. Listen and circle the best answer A, B or C. You will listen TWICE. (1.25 pts) -> Gồm 5 câu (6-10), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 3. Choose A, B, or C to complete the following sentences. (3 pts) -> Gồm 12 câu (11-22), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 1. Listen and circle the best answer A, B or C. You will listen TWICE. (1.25 pts) -> Gồm 5 câu (1-5), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 2. Listen and decide if each statement is True (T) or False (F). (1.25 pts) -> Gồm 5 câu (6-10), mỗi câu 0.25 điểm. Đáp án: A. True, B. False.
+- Part 3. Choose A, B, or C to complete the following sentences. (3.0 pts) -> Gồm 12 câu (11-22), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 4. Read the text. Then choose the best answer. (1.25 pts) -> Gồm 5 câu (23-27), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 5. Read the passage and choose the best answer for each question. (1.25 pts) -> Gồm 5 câu (28-32), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 6. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Cung cấp 3 lựa chọn trắc nghiệm A, B, C chứa câu đã sắp xếp sẵn cho học sinh chọn.
-- Part 7. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 6. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 7. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 8. Write a short paragraph (80 - 100 words) about a given topic. (1 pt) -> 1 câu tự luận viết đoạn văn (Câu 37).
 `;
     } else if (isFinalTerm) {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN (2.0 ĐIỂM NÓI SẼ ĐƯỢC CHẤM RIÊNG):
-- Part 1. Listen and decide if each statement is True (T) or False (F). (1.0 pt) -> Gồm 5 câu (1-5), mỗi câu 0.2 điểm. Đáp án: A. True, B. False.
-- Part 2. Listen and choose the best option to complete each sentence. You will listen TWICE. (1.0 pt) -> Gồm 5 câu (6-10), mỗi câu 0.2 điểm. Đáp án: A, B, C.
+CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG ĐIỂM TOÀN BÀI CẢ NÓI LÀ 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
+- Part 1. Listen and circle the best answer A, B or C. You will listen TWICE. (1.0 pt) -> Gồm 5 câu (1-5), mỗi câu 0.2 điểm. Đáp án: A, B, C.
+- Part 2. Listen and decide if each statement is True (T) or False (F). (1.0 pt) -> Gồm 5 câu (6-10), mỗi câu 0.2 điểm. Đáp án: A. True, B. False.
 - Part 3. Choose A, B, or C to complete the following sentences. (2.4 pts) -> Gồm 12 câu (11-22), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 4. Read the passage and choose the best answer. (1.0 pt) -> Gồm 5 câu (23-27), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 5. Read the passage and choose the best answer for each question. (1.0 pt) -> Gồm 5 câu (28-32), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.4 pt) -> Gồm 2 câu (33-34), mỗi câu 0.2 điểm. Đáp án: A, B, C.
-- Part 7. Complete the second sentence so that it has the same meaning to the first. (0.4 pt) -> Gồm 2 câu (35-36), mỗi câu 0.2 điểm. Đáp án: A, B, C.
-- Part 8. Write a paragraph (80-100 words) about a given topic. (0.8 pt) -> 1 câu tự luận viết đoạn văn (Câu 37).
+- Part 7. Reorder the words/phrases to make completed sentences. (0.2 pt) -> Gồm 1 câu (câu 35), 0.2 điểm. Đáp án: A, B, C.
+- Part 8. Write a paragraph (80-100 words) about a given topic. (1.0 pt) -> 1 câu tự luận viết đoạn văn (Câu 36).
 `;
     } else {
       examStructureRules = `

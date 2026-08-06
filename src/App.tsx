@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { StudentPracticeView } from './components/StudentPracticeView';
 import { GLOBAL_SUCCESS_UNITS } from './data/globalSuccessUnits';
+import { generateMatrixExcel, generateSpecificationExcel } from './utils/excelExporter';
 
 export default function App() {
   const [suite, setSuite] = useState<FullExamSuite | null>(null);
@@ -136,6 +137,32 @@ export default function App() {
     } catch (e: any) {
       alert('Lỗi xuất file Word: ' + e.message);
     }
+  };
+
+  const handleDownloadMatrixExcel = () => {
+    if (!suite || suite.papers.length === 0) return;
+    const paper = suite.papers[0];
+    const blob = generateMatrixExcel(
+      suite.matrix,
+      paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
+      paper.examType,
+      paper.academicYear || '2026-2027'
+    );
+    downloadBlob(blob, `MaTran_DeKT_${paper.grade.replace(/\s+/g, '')}.xls`);
+    showToast('📥 Đã tải xuống tệp MaTran.xls!');
+  };
+
+  const handleDownloadSpecExcel = () => {
+    if (!suite || suite.papers.length === 0) return;
+    const paper = suite.papers[0];
+    const blob = generateSpecificationExcel(
+      suite.specifications,
+      paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
+      paper.examType,
+      paper.academicYear || '2026-2027'
+    );
+    downloadBlob(blob, `DacTa_DeKT_${paper.grade.replace(/\s+/g, '')}.xls`);
+    showToast('📥 Đã tải xuống tệp DacTa.xls!');
   };
 
   const handleDownloadPaperDocx = async (paper: ExamPaper) => {
@@ -332,6 +359,7 @@ export default function App() {
                       matrix={suite.matrix}
                       summary={suite.summary}
                       onDownloadDocx={handleDownloadMatrixSpecDocx}
+                      onDownloadExcel={handleDownloadMatrixExcel}
                     />
                   )}
 
@@ -339,6 +367,7 @@ export default function App() {
                     <SpecificationView
                       specifications={suite.specifications}
                       onDownloadDocx={handleDownloadMatrixSpecDocx}
+                      onDownloadExcel={handleDownloadSpecExcel}
                     />
                   )}
 

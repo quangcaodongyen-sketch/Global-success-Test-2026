@@ -383,7 +383,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
       spacing: { after: 300 },
       children: [
         new TextRun({
-          text: `MÃ ĐỀ THI: ${paper.code} | Loại bài: ${paper.examType} | Năm học: ${admin.academicYear}`,
+          text: `MÃ ĐỀ KIỂM TRA: ${paper.code} | Loại bài: ${paper.examType} | Năm học: ${admin.academicYear}`,
           italics: true,
           size: 24,
           font: FONT_FAMILY,
@@ -434,12 +434,29 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
         ]
       : []),
 
+    // Compact MCQ Answer Grid Table
+    new Paragraph({
+      spacing: { before: 150, after: 100 },
+      children: [
+        new TextRun({
+          text: `II. BẢNG ĐÁP ÁN TRẮC NGHIỆM KHÁCH QUAN (MÃ ĐỀ ${paper.code}):`,
+          bold: true,
+          size: 28,
+          font: FONT_FAMILY,
+        }),
+      ],
+    }),
+
+    createCompactAnswerGridTable(paper),
+
+    new Paragraph({ spacing: { after: 200 } }),
+
     // Detailed Answer Table
     new Paragraph({
       spacing: { before: 150, after: 100 },
       children: [
         new TextRun({
-          text: `II. ĐÁP ÁN VÀ THANG ĐIỂM CHI TIẾT (MÃ ĐỀ ${paper.code}):`,
+          text: `III. ĐÁP ÁN CHI TIẾT KÈM GIẢI THÍCH & BIỂU ĐIỂM:`,
           bold: true,
           size: 28,
           font: FONT_FAMILY,
@@ -456,7 +473,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
       spacing: { before: 150, after: 100 },
       children: [
         new TextRun({
-          text: `III. HƯỚNG DẪN CHẤM PHẦN VIẾT (WRITING MARK SCHEME):`,
+          text: `IV. HƯỚNG DẪN CHẤM PHẦN VIẾT (WRITING MARK SCHEME):`,
           bold: true,
           size: 28,
           font: FONT_FAMILY,
@@ -468,7 +485,9 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
       spacing: { after: 200 },
       children: [
         new TextRun({
-          text: paper.writingMarkScheme || `1. Ý tưởng & Bố cục (Task Fulfillment & Organization): 0.5 điểm\n2. Từ vựng & Ngữ pháp (Vocabulary & Grammar Accuracy): 0.5 điểm\n3. Sự mạch lạc & Liên kết (Coherence & Cohesion): 0.5 điểm`,
+          text: paper.writingMarkScheme || (paper.examType.includes('Cuối kỳ') 
+            ? `1. Topic sentence: 0.4 pts.\n2. Supporting sentences: 0.2 pts.\n3. Range of vocabulary use: 0.2 pts.\n4. Accuracy (Grammar, spelling, punctuation): 0.2 pts.`
+            : `1. Ý tưởng & Bố cục (Task Fulfillment & Organization): 0.5 điểm\n2. Từ vựng & Ngữ pháp (Vocabulary & Grammar Accuracy): 0.5 điểm\n3. Sự mạch lạc & Liên kết (Coherence & Cohesion): 0.5 điểm`),
           size: 26,
           font: FONT_FAMILY,
         }),
@@ -482,7 +501,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
             spacing: { before: 150, after: 100 },
             children: [
               new TextRun({
-                text: `IV. HƯỚNG DẪN CHẤM VÀ GỢI Ý ĐÁP ÁN PHẦN NÓI (SPEAKING GUIDELINES):`,
+                text: `V. HƯỚNG DẪN CHẤM VÀ GỢI Ý ĐÁP ÁN PHẦN NÓI (SPEAKING GUIDELINES):`,
                 bold: true,
                 size: 28,
                 font: FONT_FAMILY,
@@ -669,7 +688,7 @@ function createExamHeaderTable(
                 alignment: AlignmentType.RIGHT,
                 children: [
                   new TextRun({
-                    text: `MÃ ĐỀ THI: ${code}`,
+                    text: `MÃ ĐỀ KIỂM TRA: ${code}`,
                     bold: true,
                     size: 32, // 16pt
                     font: FONT_FAMILY,
@@ -1002,6 +1021,40 @@ function createSpecTable(specs: SpecificationItem[]): Table {
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [new TableRow({ children: headerCells }), ...rows],
+  });
+}
+
+function createCompactAnswerGridTable(paper: ExamPaper): Table {
+  const limit = paper.examType.includes('Cuối kỳ') ? 35 : 36;
+  const mcqAnswers = paper.answerKey.filter(item => item.questionNumber <= limit);
+  const rows: TableRow[] = [];
+  const colsCount = 6;
+  
+  for (let i = 0; i < mcqAnswers.length; i += colsCount) {
+    const chunk = mcqAnswers.slice(i, i + colsCount);
+    const rowCells = chunk.map(item => 
+      new TableCell({
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ text: `${item.questionNumber}. `, bold: true, size: 24, font: FONT_FAMILY }),
+              new TextRun({ text: `${item.answer}`, bold: true, size: 24, color: '1D4ED8', font: FONT_FAMILY }),
+            ]
+          })
+        ],
+        margins: { top: 120, bottom: 120, left: 100, right: 100 }
+      })
+    );
+    while (rowCells.length < colsCount) {
+      rowCells.push(new TableCell({ children: [] }));
+    }
+    rows.push(new TableRow({ children: rowCells }));
+  }
+  
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows
   });
 }
 
