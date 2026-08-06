@@ -110,7 +110,7 @@ export default function App() {
 
   // 2. Generate Next Variant (Code 002, 003...)
   const handleGenerateNextVariant = () => {
-    if (!suite || suite.papers.length === 0) return;
+    if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
 
     const primaryPaper = suite.papers[0];
     const newVariant = generateNextPaperVariant(primaryPaper, suite.papers.length);
@@ -130,7 +130,7 @@ export default function App() {
 
   // 3. Export Single Word Files
   const handleDownloadMatrixSpecDocx = async () => {
-    if (!suite || suite.papers.length === 0) return;
+    if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
     try {
       const blob = await generateMatrixAndSpecDocx(suite, suite.papers[0]);
       downloadBlob(blob, `Matran_Dacta_${suite.papers[0].grade.replace(/\s+/g, '')}.docx`);
@@ -141,7 +141,7 @@ export default function App() {
   };
 
   const handleDownloadMatrixExcel = async () => {
-    if (!suite || suite.papers.length === 0) return;
+    if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
     const paper = suite.papers[0];
     try {
       const blob = await generateMatrixExcel(
@@ -159,7 +159,7 @@ export default function App() {
   };
 
   const handleDownloadSpecExcel = async () => {
-    if (!suite || suite.papers.length === 0) return;
+    if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
     const paper = suite.papers[0];
     try {
       const blob = await generateSpecificationExcel(
@@ -198,7 +198,7 @@ export default function App() {
 
   // 4. Export ZIP Package following Decree 30
   const handleExportZip = async () => {
-    if (!suite) return;
+    if (!suite || !Array.isArray(suite.papers) || suite.papers.length === 0) return;
     try {
       const zipBlob = await exportExamSuiteZip(suite, showCognition);
       const paper0 = suite.papers[0];
@@ -234,7 +234,7 @@ export default function App() {
     showToast('🔑 Đã cập nhật cấu hình API Key & Model AI!');
   };
 
-  const currentPaper = suite?.papers.find((p) => p.code === activePaperCode) || suite?.papers[0];
+  const currentPaper = Array.isArray(suite?.papers) ? (suite.papers.find((p) => p.code === activePaperCode) || suite.papers[0]) : undefined;
 
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-900 font-sans flex flex-col">

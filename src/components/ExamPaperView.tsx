@@ -37,7 +37,14 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
   const currentPaper = safePapers.find((p) => p.code === activePaperCode) || safePapers[0];
   const [showAudioScript, setShowAudioScript] = useState(false);
 
-  if (!currentPaper) return null;
+  if (!currentPaper) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl flex flex-col items-center justify-center text-center space-y-3">
+        <h3 className="font-bold text-lg">Lỗi tải dữ liệu Đề Thi</h3>
+        <p className="text-sm">Hệ thống AI không trả về cấu trúc đề thi hợp lệ. Vui lòng thử bấm nút "Tạo Bộ Đề Mới" lại một lần nữa.</p>
+      </div>
+    );
+  }
 
   const admin = currentPaper.adminInfo || {};
 

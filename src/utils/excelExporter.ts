@@ -109,7 +109,7 @@ async function buildFallbackMatrixExcel(matrix: MatrixItem[], schoolName: string
     [],
     [`STT`, `Kỹ Năng / Mạch Kiến Thức`, `Dạng Bài / Dạng Câu Hỏi`, `Mức Độ Nhận Thức`, `Số Câu`, `Tổng Điểm`]
   ];
-  matrix.forEach((item, idx) => {
+  (Array.isArray(matrix) ? matrix : []).forEach((item, idx) => {
     data.push([String(idx + 1), item.skill, item.subSkill, item.cognitionLevel, String(item.questionCount), `${item.points.toFixed(1)}đ`]);
   });
   return await buildXlsxFile(data);
@@ -123,7 +123,7 @@ async function buildFallbackSpecExcel(specifications: SpecificationItem[], schoo
     [],
     [`Kỹ năng`, `Chủ đề / Đơn vị kiến thức`, `Yêu cầu cần đạt`, `Nhận biết`, `Thông hiểu`, `Vận dụng`, `Vận dụng cao`, `Tổng cộng`]
   ];
-  specifications.forEach((item) => {
+  (Array.isArray(specifications) ? specifications : []).forEach((item) => {
     data.push([item.skill, item.knowledgeUnit, item.performanceIndicator, item.recognitionCount > 0 ? `${item.recognitionCount} câu` : '-', item.comprehensionCount > 0 ? `${item.comprehensionCount} câu` : '-', item.applicationCount > 0 ? `${item.applicationCount} câu` : '-', item.highApplicationCount > 0 ? `${item.highApplicationCount} câu` : '-', `${item.totalQuestions} câu (${item.totalPoints.toFixed(1)}đ)`]);
   });
   return await buildXlsxFile(data);
@@ -137,7 +137,7 @@ export async function generateMatrixExcel(
   academicYear: string,
   grade: string
 ): Promise<Blob> {
-  const isFinal = examType.includes('Cuối kỳ');
+  const isFinal = (examType || '').includes('Cuối kỳ');
   const templatePath = isFinal
     ? '/Tai lieu/Ma trận Đề KT CK môn TA cấp THCS.xlsx'
     : '/Tai lieu/Ma trận Đề KT GK  môn TA cấp THCS.xlsx';
@@ -174,7 +174,7 @@ export async function generateSpecificationExcel(
   academicYear: string,
   grade: string
 ): Promise<Blob> {
-  const isFinal = examType.includes('Cuối kỳ');
+  const isFinal = (examType || '').includes('Cuối kỳ');
   const templatePath = isFinal
     ? '/Tai lieu/Đặc tả Đề KT CUỐI KỲ II TA 8. 2026.xlsx'
     : '/Tai lieu/Đặc tả Đề KT GKI TA 8.xlsx';

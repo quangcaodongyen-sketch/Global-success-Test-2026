@@ -92,7 +92,7 @@ function processQuestion<T>(q: Question, shuffleArray: (arr: any[]) => any[]): Q
   }
 
   // Find current correct text
-  const currentCorrectOption = q.options.find((opt) => opt.key === q.correctAnswer || opt.key + '.' === q.correctAnswer);
+  const currentCorrectOption = (q.options || []).find((opt) => opt.key === q.correctAnswer || opt.key + '.' === q.correctAnswer);
   const correctText = currentCorrectOption ? currentCorrectOption.text : '';
 
   // Shuffle option contents

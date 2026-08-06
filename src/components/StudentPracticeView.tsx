@@ -75,9 +75,9 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
   let totalPoints = 0;
   let earnedPoints = 0;
 
-  paper.sections.forEach((sec) => {
-    sec.questions.forEach((q) => {
-      totalPoints += q.points;
+  (Array.isArray(paper.sections) ? paper.sections : []).forEach((sec) => {
+    (Array.isArray(sec.questions) ? sec.questions : []).forEach((q) => {
+      totalPoints += q.points || 0;
       const isMcq = Array.isArray(q.options) && q.options.length > 0;
       if (isMcq) {
         totalMcq++;

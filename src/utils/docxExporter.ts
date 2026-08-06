@@ -119,7 +119,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
   // Render Sections
   let globalQuestionIndex = 1;
-  paper.sections.forEach((section) => {
+  (Array.isArray(paper.sections) ? paper.sections : []).forEach((section) => {
     children.push(
       new Paragraph({
         spacing: { before: 200, after: 100 },
@@ -181,7 +181,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
     }
 
     // Questions
-    section.questions.forEach((q) => {
+    (Array.isArray(section.questions) ? section.questions : []).forEach((q) => {
       const isEssay = q.type === 'ESSAY';
       const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
 
@@ -358,7 +358,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       })
     );
 
-    paper.speakingTopics.forEach((topic, idx) => {
+    (Array.isArray(paper.speakingTopics) ? paper.speakingTopics : []).forEach((topic, idx) => {
       children.push(
         new Paragraph({
           spacing: { before: 100, after: 50 },
@@ -557,7 +557,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
       spacing: { after: 200 },
       children: [
         new TextRun({
-          text: paper.writingMarkScheme || (paper.examType.includes('Cuối kỳ') 
+          text: paper.writingMarkScheme || ((paper.examType || '').includes('Cuối kỳ') 
             ? `1. Topic sentence: 0.4 pts.\n2. Supporting sentences: 0.2 pts.\n3. Range of vocabulary use: 0.2 pts.\n4. Accuracy (Grammar, spelling, punctuation): 0.2 pts.`
             : `1. Ý tưởng & Bố cục (Task Fulfillment & Organization): 0.5 điểm\n2. Từ vựng & Ngữ pháp (Vocabulary & Grammar Accuracy): 0.5 điểm\n3. Sự mạch lạc & Liên kết (Coherence & Cohesion): 0.5 điểm`),
           size: 26,
@@ -1371,8 +1371,8 @@ function createSpecTable(specs: SpecificationItem[]): Table {
 }
 
 function createCompactAnswerGridTable(paper: ExamPaper): Table {
-  const limit = paper.examType.includes('Cuối kỳ') ? 35 : 36;
-  const mcqAnswers = paper.answerKey.filter(item => item.questionNumber <= limit);
+  const limit = (paper.examType || '').includes('Cuối kỳ') ? 35 : 36;
+  const mcqAnswers = (paper.answerKey || []).filter(item => item.questionNumber <= limit);
   const rows: TableRow[] = [];
   const colsCount = 6;
   
