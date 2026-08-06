@@ -187,11 +187,11 @@ export const InputForm: React.FC<InputFormProps> = ({
             onChange={(e) => setExamType(e.target.value as ExamType)}
             className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           >
-            <option value="15 phút">15 Phút (Bài kiểm tra thường xuyên)</option>
-            <option value="Giữa kỳ 1">Giữa Kỳ 1 (45 phút - Bài kiểm tra định kỳ)</option>
-            <option value="Giữa kỳ 2">Giữa Kỳ 2 (45 phút - Bài kiểm tra định kỳ)</option>
-            <option value="Cuối kỳ 1">Cuối Kỳ 1 (60 phút - Bài kiểm tra học kỳ)</option>
-            <option value="Cuối kỳ 2">Cuối Kỳ 2 (60 phút - Bài kiểm tra học kỳ)</option>
+            <option value="15 phút">Kiểm tra 15 phút</option>
+            <option value="Giữa kỳ 1">Giữa kỳ 1</option>
+            <option value="Cuối kỳ 1">Cuối kỳ 1</option>
+            <option value="Giữa kỳ 2">Giữa kỳ 2</option>
+            <option value="Cuối kỳ 2">Cuối kỳ 2</option>
           </select>
         </div>
       </div>

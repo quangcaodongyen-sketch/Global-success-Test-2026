@@ -404,7 +404,7 @@ export const DEFAULT_ADMIN_INFO: Record<Grade, AdminInfo> = {
     className: 'Lớp 6A1',
     academicYear: '2026-2027',
     teacherName: 'Đinh Văn Thành',
-    durationMinutes: 45,
+    durationMinutes: 60,
     examDate: new Date().toLocaleDateString('vi-VN')
   },
   'Lớp 7': {
@@ -412,7 +412,7 @@ export const DEFAULT_ADMIN_INFO: Record<Grade, AdminInfo> = {
     className: 'Lớp 7A1',
     academicYear: '2026-2027',
     teacherName: 'Đinh Văn Thành',
-    durationMinutes: 45,
+    durationMinutes: 60,
     examDate: new Date().toLocaleDateString('vi-VN')
   },
   'Lớp 8': {
@@ -420,7 +420,7 @@ export const DEFAULT_ADMIN_INFO: Record<Grade, AdminInfo> = {
     className: 'Lớp 8A1',
     academicYear: '2026-2027',
     teacherName: 'Đinh Văn Thành',
-    durationMinutes: 45,
+    durationMinutes: 60,
     examDate: new Date().toLocaleDateString('vi-VN')
   },
   'Lớp 9': {
@@ -435,8 +435,8 @@ export const DEFAULT_ADMIN_INFO: Record<Grade, AdminInfo> = {
 
 export const EXAM_TYPE_DURATION: Record<ExamType, number> = {
   '15 phút': 15,
-  'Giữa kỳ 1': 45,
-  'Giữa kỳ 2': 45,
+  'Giữa kỳ 1': 60,
+  'Giữa kỳ 2': 60,
   'Cuối kỳ 1': 60,
   'Cuối kỳ 2': 60
 };

@@ -277,8 +277,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
         globalQuestionIndex++;
       }
 
-      // Render Options if MCQ
-      if (q.type === 'MCQ' && q.options && q.options.length > 0) {
+      // Render Options if question has options
+      if (q.options && q.options.length > 0) {
         const optionRuns = q.options.map(
           (opt) => `${opt.key}. ${opt.text}`
         );
