@@ -25,6 +25,7 @@ import {
   CopyPlus,
   Loader2,
   ListChecks,
+  BookOpen,
 } from 'lucide-react';
 
 interface InputFormProps {
