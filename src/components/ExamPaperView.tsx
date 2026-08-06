@@ -221,7 +221,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
             let globalQIdx = 1;
             const safeSections = Array.isArray(currentPaper.sections) ? currentPaper.sections : [];
             const validSections = safeSections.filter(s => {
-              if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
+              if (!s.questions || s.questions.length === 0) {
                 return false;
               }
               return true;
@@ -247,7 +247,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
                   {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
-                    const isEssay = q.type === 'ESSAY' || q.type === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
+                    const isEssaySection = (section.title || '').toLowerCase().includes('write a paragraph') || (section.instructions || '').toLowerCase().includes('write a paragraph');
+                    const isEssay = isEssaySection || (q.type || '').toUpperCase() === 'ESSAY' || (q.type || '').toUpperCase() === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
                     const currentQNum = isEssay ? null : globalQIdx++;
                     return (
                       <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">

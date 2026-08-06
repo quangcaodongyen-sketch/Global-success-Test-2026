@@ -121,8 +121,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
   let globalQuestionIndex = 1;
   const safeSections = Array.isArray(paper.sections) ? paper.sections : [];
   const validSections = safeSections.filter(s => {
-    // Prevent AI-generated title header section
-    if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
+    // Prevent AI-generated empty sections (like headers)
+    if (!s.questions || s.questions.length === 0) {
       return false;
     }
     return true;
@@ -191,7 +191,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
     // Questions
     (Array.isArray(section.questions) ? section.questions : []).forEach((q) => {
-      const isEssay = q.type === 'ESSAY' || q.type === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
+      const isEssaySection = (section.title || '').toLowerCase().includes('write a paragraph') || (section.instructions || '').toLowerCase().includes('write a paragraph');
+      const isEssay = isEssaySection || (q.type || '').toUpperCase() === 'ESSAY' || (q.type || '').toUpperCase() === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
       
       if (isEssay) {
         let promptLines = (q.prompt || '').split(/(?:\n|(?=- )|(?= - ))/).map(l => l.trim()).filter(l => l.length > 0);
