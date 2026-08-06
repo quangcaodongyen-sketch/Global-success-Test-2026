@@ -165,68 +165,74 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
 
         {/* Exam Sections */}
         <div className="space-y-6">
-          {currentPaper.sections.map((section, sIdx) => (
-            <div key={sIdx} className="space-y-3">
-              <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
-                {section.title}
-              </h3>
+          {(() => {
+            let globalQIdx = 1;
+            return currentPaper.sections.map((section, sIdx) => (
+              <div key={sIdx} className="space-y-3">
+                <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
+                  {section.title}
+                </h3>
 
-              {section.instructions && (
-                <p className="italic text-xs text-slate-700 font-sans font-medium bg-indigo-50/60 p-2 rounded border border-indigo-100">
-                  {section.instructions}
-                </p>
-              )}
+                {section.instructions && (
+                  <p className="italic text-xs text-slate-700 font-sans font-medium bg-indigo-50/60 p-2 rounded border border-indigo-100">
+                    {section.instructions}
+                  </p>
+                )}
 
-              {section.readingPassage && (
-                <div className="bg-amber-50/50 p-3.5 rounded-lg border border-amber-200/80 text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line font-sans my-2">
-                  {section.readingPassage}
-                </div>
-              )}
-
-              {/* Questions */}
-              <div className="space-y-3 pl-1">
-                {section.questions.map((q, qIdx) => (
-                  <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">
-                    <p className="leading-snug">
-                      <span className="font-bold text-slate-900">Câu {qIdx + 1}: </span>
-                      <span>{q.prompt}</span>
-                      <span className="text-[11px] text-slate-500 font-sans italic ml-1">
-                        [{q.points}đ - {q.cognitionLevel}]
-                      </span>
-                    </p>
-
-                    {/* MCQ Options */}
-                    {q.type === 'MCQ' && q.options && q.options.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1.5 pl-4 font-sans text-slate-800">
-                        {q.options.map((opt) => (
-                          <div key={opt.key} className="flex items-center gap-1.5">
-                            <span className="font-bold text-indigo-900">{opt.key}.</span>
-                            <span>{opt.text}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Rewrite or Fill-in prompt line */}
-                    {(q.type === 'REWRITE' || q.type === 'FILL_IN') && (
-                      <div className="mt-1.5 pl-4 text-slate-500 font-mono text-xs">
-                        👉 Trả lời: ..........................................................................................................................................................
-                      </div>
-                    )}
-
-                    {/* Essay prompt space */}
-                    {q.type === 'ESSAY' && (
-                      <div className="mt-2 pl-4 text-slate-400 font-mono text-xs space-y-1">
-                        <p>..........................................................................................................................................................................</p>
-                        <p>..........................................................................................................................................................................</p>
-                        <p>..........................................................................................................................................................................</p>
-                      </div>
-                    )}
+                {section.readingPassage && (
+                  <div className="bg-amber-50/50 p-3.5 rounded-lg border border-amber-200/80 text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line font-sans my-2">
+                    {section.readingPassage}
                   </div>
-                ))}
+                )}
+
+                {/* Questions */}
+                <div className="space-y-3 pl-1">
+                  {section.questions.map((q, qIdx) => {
+                    const currentQNum = globalQIdx++;
+                    return (
+                      <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">
+                        <p className="leading-snug">
+                          <span className="font-bold text-slate-900">{currentQNum}. </span>
+                          <span>{q.prompt}</span>
+                          <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                            [{q.points}đ - {q.cognitionLevel}]
+                          </span>
+                        </p>
+
+                        {/* MCQ Options */}
+                        {q.type === 'MCQ' && q.options && q.options.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1.5 pl-4 font-sans text-slate-800">
+                            {q.options.map((opt) => (
+                              <div key={opt.key} className="flex items-center gap-1.5">
+                                <span className="font-bold text-indigo-900">{opt.key}.</span>
+                                <span>{opt.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Rewrite or Fill-in prompt line */}
+                        {(q.type === 'REWRITE' || q.type === 'FILL_IN') && (
+                          <div className="mt-1.5 pl-4 text-slate-500 font-mono text-xs">
+                            👉 Trả lời: ..........................................................................................................................................................
+                          </div>
+                        )}
+
+                        {/* Essay prompt space */}
+                        {q.type === 'ESSAY' && (
+                          <div className="mt-2 pl-4 text-slate-400 font-mono text-xs space-y-1">
+                            <p>..........................................................................................................................................................................</p>
+                            <p>..........................................................................................................................................................................</p>
+                            <p>..........................................................................................................................................................................</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
 
         {/* Speaking Section if present */}

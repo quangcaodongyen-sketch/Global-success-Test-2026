@@ -1,0 +1,17 @@
+Row 2: A2: MA TRẬN ĐỀ KIỂM TRA GIỮA KÌ  – 36 Qs x 0.25 + 1 viết = 10 điểm | B2:  | C2:  | D2:  | E2:  | F2:  | G2:  | H2:  | I2:  | J2:  | K2:  | L2:  | M2:  | N2:  | O2:  | P2: 
+Row 3: A3: TT | B3: Tỉ lệ % | C3: Nội dung/đơn vị kiến thức | D3: M | E3:  | F3:  | G3:  | H3:  | I3:  | J3:  | K3:  | L3:  | M3: ức độ đánh giá | N3:  | O3:  | P3: Chương/ chủ đề
+Row 4: A4:  | B4:  | C4:  | D4: Tổng | E4:  | F4:  | G4: TNKQ nhiều lựa chọn | H4:  | I4:  | J4: TNKQ đúng - sai | K4:  | L4:  | M4:  | N4:  | O4:  | P4: 
+Row 5: A5:  | B5:  | C5:  | D5: Tự luận | E5: Biết | F5: Hiểu | G5: Tự luận | H5: Biết | I5: Hiểu | J5: Tự luận | K5: Biết | L5: Hiểu | M5: Tự luận | N5: Biết | O5: Hiểu | P5: 
+Row 6: A6: 1 | B6: Tỉ lệ % điểm | C6: VD | D6:  | E6:  | F6:  | G6: 3 | H6: 2 | I6:  | J6:  | K6:  | L6:  | M6: 3 | N6: 2 | O6: 0 | P6: 0.125
+Row 7: A7:  | B7:  | C7: Nghe hiểu 1: Nghe và trả lời câu hỏi đúng/sai | D7: 2 | E7: 2 | F7: 1 | G7:  | H7:  | I7:  | J7:  | K7:  | L7:  | M7: 2 | N7: 2 | O7: 1 | P7: 0.125
+Row 8: A8: 2 | B8: Nghe hiểu 2: Nghe và chọn đáp án đúng (3 hoặc 4 lựa chọn) | C8: Đọc hiểu- 25%  | D8: 3 | E8: 1 | F8: 1 | G8:  | H8:  | I8:  | J8:  | K8:  | L8:  | M8: 3 | N8: 1 | O8: 1 | P8: 0.125
+Row 9: A9:  | B9:  | C9: Đọc hiểu 1: Bài đọc điền từ vào chỗ trống trong bài văn (MCQs) | D9: 2 | E9: 2 | F9: 1 | G9:  | H9:  | I9:  | J9:  | K9:  | L9:  | M9: 2 | N9: 2 | O9: 1 | P9: 0.125
+Row 10: A10: 3 | B10: Đọc hiểu 2: Đọc và trả lời câu hỏi liên quan đến nội dung bài đọc  | C10: Kiến thức ngôn ngữ - 30% | D10: 2 | E10:  | F10:  | G10:  | H10:  | I10:  | J10:  | K10:  | L10:  | M10: 2 | N10: 0 | O10: 0 | P10: 0.05
+Row 11: A11:  | B11:  | C11: Kiến thức ngôn ngữ 1: Tình huống giao tiếp | D11:  | E11: 2 | F11: 3 | G11:  | H11:  | I11:  | J11:  | K11:  | L11:  | M11: 0 | N11: 2 | O11: 3 | P11: 0.125
+Row 12: A12:  | B12:  | C12: Kiến thức ngôn ngữ 2: Từ vựng | D12: 4 | E12: 1 | F12:  | G12:  | H12:  | I12:  | J12:  | K12:  | L12:  | M12: 4 | N12: 1 | O12: 0 | P12: 0.125
+Row 13: A13: 4 | B13: Kiến thức ngôn ngữ 3: Ngữ pháp | C13: Nghe hiểu 25%  | D13:  | E13: 2 | F13: 2 | G13:  | H13:  | I13:  | J13:  | K13:  | L13:  | M13: 0 | N13: 2 | O13: 2 | P13: 0.1
+Row 14: A14:  | B14:  | C14: Viết- 20% | D14:  | E14:  | F14:  | G14:  | H14:  | I14:  | J14:  | K14:  | L14: 1 | M14: 0 | N14: 0 | O14: 1 | P14: 0.1
+Row 15: A15: Viết 2: Viết đoạn văn/bài văn | B15:  | C15:  | D15: 13 | E15: 10 | F15: 8 | G15: 3 | H15: 2 | I15: 0 | J15: 0 | K15: 0 | L15: 1 | M15: 16 | N15: 12 | O15: 9 | P15: 
+Row 16: A16: Tổng số câu | B16:  | C16:  | D16: 3.25 | E16: 2.5 | F16: 2 | G16: 0.75 | H16: 0.5 | I16: 0 | J16: 0 | K16: 0 | L16: 1 | M16: 4 | N16: 3 | O16: 3 | P16: 
+Row 17: A17: Tổng số điểm | B17:  | C17:  | D17: 0.77500000000000002 | E17:  | F17:  | G17: 0.125 | H17:  | I17:  | J17: 0.1 | K17:  | L17:  | M17: 0.4 | N17: 0.3 | O17: 0.3 | P17: 1
+Row 18: P18: 

@@ -139,30 +139,40 @@ export default function App() {
     }
   };
 
-  const handleDownloadMatrixExcel = () => {
+  const handleDownloadMatrixExcel = async () => {
     if (!suite || suite.papers.length === 0) return;
     const paper = suite.papers[0];
-    const blob = generateMatrixExcel(
-      suite.matrix,
-      paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
-      paper.examType,
-      paper.academicYear || '2026-2027'
-    );
-    downloadBlob(blob, `MaTran_DeKT_${paper.grade.replace(/\s+/g, '')}.xls`);
-    showToast('📥 Đã tải xuống tệp MaTran.xls!');
+    try {
+      const blob = await generateMatrixExcel(
+        suite.matrix,
+        paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
+        paper.examType,
+        paper.academicYear || '2026-2027',
+        paper.grade
+      );
+      downloadBlob(blob, `MaTran_DeKT_${paper.grade.replace(/\s+/g, '')}.xlsx`);
+      showToast('📥 Đã tải xuống tệp MaTran.xlsx!');
+    } catch (e: any) {
+      alert('Lỗi xuất file Excel: ' + e.message);
+    }
   };
 
-  const handleDownloadSpecExcel = () => {
+  const handleDownloadSpecExcel = async () => {
     if (!suite || suite.papers.length === 0) return;
     const paper = suite.papers[0];
-    const blob = generateSpecificationExcel(
-      suite.specifications,
-      paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
-      paper.examType,
-      paper.academicYear || '2026-2027'
-    );
-    downloadBlob(blob, `DacTa_DeKT_${paper.grade.replace(/\s+/g, '')}.xls`);
-    showToast('📥 Đã tải xuống tệp DacTa.xls!');
+    try {
+      const blob = await generateSpecificationExcel(
+        suite.specifications,
+        paper.schoolName || 'TRƯỜNG THCS ĐỒNG YÊN',
+        paper.examType,
+        paper.academicYear || '2026-2027',
+        paper.grade
+      );
+      downloadBlob(blob, `DacTa_DeKT_${paper.grade.replace(/\s+/g, '')}.xlsx`);
+      showToast('📥 Đã tải xuống tệp DacTa.xlsx!');
+    } catch (e: any) {
+      alert('Lỗi xuất file Excel: ' + e.message);
+    }
   };
 
   const handleDownloadPaperDocx = async (paper: ExamPaper) => {

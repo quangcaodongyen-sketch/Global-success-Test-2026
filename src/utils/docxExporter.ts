@@ -118,6 +118,7 @@ export async function generateExamPaperDocx(paper: ExamPaper): Promise<Blob> {
   ];
 
   // Render Sections
+  let globalQuestionIndex = 1;
   paper.sections.forEach((section) => {
     children.push(
       new Paragraph({
@@ -180,8 +181,8 @@ export async function generateExamPaperDocx(paper: ExamPaper): Promise<Blob> {
     }
 
     // Questions
-    section.questions.forEach((q, qIdx) => {
-      const qNumText = `Câu ${qIdx + 1}: `;
+    section.questions.forEach((q) => {
+      const qNumText = `${globalQuestionIndex}. `;
       children.push(
         new Paragraph({
           spacing: { before: 120, after: 60 },
@@ -206,6 +207,7 @@ export async function generateExamPaperDocx(paper: ExamPaper): Promise<Blob> {
           ],
         })
       );
+      globalQuestionIndex++;
 
       // Render Options if MCQ
       if (q.type === 'MCQ' && q.options && q.options.length > 0) {

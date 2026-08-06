@@ -1,3 +1,4 @@
+import JSZip from 'jszip';
 import { MatrixItem, SpecificationItem } from '../types';
 
 // Helper to download a blob client-side
@@ -12,143 +13,192 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-// Generate Excel (as styled HTML Spreadsheet) for MOET Matrix
-export function generateMatrixExcel(
+// Helper to convert column index (0-based) to Excel letter
+function getColumnLetter(colIndex: number): string {
+  let temp = colIndex;
+  let letter = '';
+  while (temp >= 0) {
+    letter = String.fromCharCode((temp % 26) + 65) + letter;
+    temp = Math.floor(temp / 26) - 1;
+  }
+  return letter;
+}
+
+// Escape special XML characters
+function escapeXml(unsafe: string): string {
+  if (unsafe === undefined || unsafe === null) return '';
+  return String(unsafe).replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+}
+
+// Fallback basic sheet generator
+async function buildXlsxFile(sheetDataRows: string[][]): Promise<Blob> {
+  const zip = new JSZip();
+
+  const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>`;
+  zip.file('[Content_Types].xml', contentTypesXml);
+
+  const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+  zip.file('_rels/.rels', relsXml);
+
+  const workbookXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>`;
+  zip.file('xl/workbook.xml', workbookXml);
+
+  const workbookRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`;
+  zip.file('xl/_rels/workbook.xml.rels', workbookRelsXml);
+
+  let rowXml = '';
+  sheetDataRows.forEach((row, rIdx) => {
+    const rowNum = rIdx + 1;
+    rowXml += `<row r="${rowNum}">`;
+    row.forEach((val, cIdx) => {
+      const colLetter = getColumnLetter(cIdx);
+      const cellRef = `${colLetter}${rowNum}`;
+      
+      const isNum = val !== '' && !isNaN(Number(val)) && isFinite(Number(val));
+      if (isNum) {
+        rowXml += `<c r="${cellRef}" t="n"><v>${val}</v></c>`;
+      } else {
+        rowXml += `<c r="${cellRef}" t="inlineStr"><is><t>${escapeXml(val)}</t></is></c>`;
+      }
+    });
+    rowXml += `</row>`;
+  });
+
+  const sheet1Xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>
+    ${rowXml}
+  </sheetData>
+</worksheet>`;
+  zip.file('xl/worksheets/sheet1.xml', sheet1Xml);
+
+  return await zip.generateAsync({ type: 'blob' });
+}
+
+// Fallback Matrix
+async function buildFallbackMatrixExcel(matrix: MatrixItem[], schoolName: string, examType: string, academicYear: string): Promise<Blob> {
+  const data: string[][] = [
+    [`MA TRẬN ĐỀ KIỂM TRA ĐÁNH GIÁ MÔN TIẾNG ANH`],
+    [`Trường: ${schoolName} | Loại bài: ${examType} | Năm học: ${academicYear}`],
+    [],
+    [`STT`, `Kỹ Năng / Mạch Kiến Thức`, `Dạng Bài / Dạng Câu Hỏi`, `Mức Độ Nhận Thức`, `Số Câu`, `Tổng Điểm`]
+  ];
+  matrix.forEach((item, idx) => {
+    data.push([String(idx + 1), item.skill, item.subSkill, item.cognitionLevel, String(item.questionCount), `${item.points.toFixed(1)}đ`]);
+  });
+  return await buildXlsxFile(data);
+}
+
+// Fallback Spec
+async function buildFallbackSpecExcel(specifications: SpecificationItem[], schoolName: string, examType: string, academicYear: string): Promise<Blob> {
+  const data: string[][] = [
+    [`BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐÁNH GIÁ MÔN TIẾNG ANH`],
+    [`Trường: ${schoolName} | Loại bài: ${examType} | Năm học: ${academicYear}`],
+    [],
+    [`Kỹ năng`, `Chủ đề / Đơn vị kiến thức`, `Yêu cầu cần đạt`, `Nhận biết`, `Thông hiểu`, `Vận dụng`, `Vận dụng cao`, `Tổng cộng`]
+  ];
+  specifications.forEach((item) => {
+    data.push([item.skill, item.knowledgeUnit, item.performanceIndicator, item.recognitionCount > 0 ? `${item.recognitionCount} câu` : '-', item.comprehensionCount > 0 ? `${item.comprehensionCount} câu` : '-', item.applicationCount > 0 ? `${item.applicationCount} câu` : '-', item.highApplicationCount > 0 ? `${item.highApplicationCount} câu` : '-', `${item.totalQuestions} câu (${item.totalPoints.toFixed(1)}đ)`]);
+  });
+  return await buildXlsxFile(data);
+}
+
+// Generate real XLSX for Matrix by modifying the official Excel template directly
+export async function generateMatrixExcel(
   matrix: MatrixItem[],
   schoolName: string,
   examType: string,
-  academicYear: string
-): Blob {
-  const rows = matrix.map((item, idx) => `
-    <tr style="height: 25px;">
-      <td style="text-align: center; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${idx + 1}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;"><b>${item.skill}</b></td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${item.subSkill}</td>
-      <td style="text-align: center; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${item.cognitionLevel}</td>
-      <td style="text-align: center; font-weight: bold; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${item.questionCount}</td>
-      <td style="text-align: center; font-weight: bold; color: #1D4ED8; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${item.points.toFixed(1)}đ</td>
-    </tr>
-  `).join('');
+  academicYear: string,
+  grade: string
+): Promise<Blob> {
+  const isFinal = examType.includes('Cuối kỳ');
+  const templatePath = isFinal
+    ? '/Tai lieu/Ma trận Đề KT CK môn TA cấp THCS.xlsx'
+    : '/Tai lieu/Ma trận Đề KT GK  môn TA cấp THCS.xlsx';
 
-  const totalQuestions = matrix.reduce((sum, item) => sum + item.questionCount, 0);
-  const totalPoints = matrix.reduce((sum, item) => sum + item.points, 0);
+  try {
+    const res = await fetch(templatePath);
+    if (!res.ok) throw new Error(`Không thể tải template: ${templatePath}`);
+    const arrayBuffer = await res.arrayBuffer();
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    
+    // Read and edit sharedStrings.xml
+    let sharedStrings = await zip.file('xl/sharedStrings.xml')!.async('text');
+    
+    sharedStrings = sharedStrings
+      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, schoolName.toUpperCase())
+      .replace(/2026-2027/g, academicYear)
+      .replace(/LỚP 8/g, grade.toUpperCase())
+      .replace(/Giữa kì I/gi, examType)
+      .replace(/GIỮA HỌC KÌ I/gi, examType.toUpperCase());
 
-  const html = `
-    <table>
-      <thead>
-        <tr>
-          <th colspan="6" style="font-size: 16pt; font-family: 'Times New Roman'; font-weight: bold; text-align: center; height: 40px;">MA TRẬN ĐỀ KIỂM TRA ĐÁNH GIÁ TIẾNG ANH</th>
-        </tr>
-        <tr>
-          <th colspan="6" style="font-size: 11pt; font-family: 'Times New Roman'; text-align: center; height: 35px; font-style: italic;">
-            Trường: ${schoolName} | Loại bài: ${examType} | Năm học: ${academicYear}
-          </th>
-        </tr>
-        <tr style="height: 30px; background-color: #E2E8F0;">
-          <th style="width: 50px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">STT</th>
-          <th style="width: 180px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Kỹ Năng / Mạch Kiến Thức</th>
-          <th style="width: 250px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Dạng Bài / Dạng Câu Hỏi</th>
-          <th style="width: 140px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Mức Độ Nhận Thức</th>
-          <th style="width: 80px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Số Câu</th>
-          <th style="width: 100px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Tổng Điểm</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-        <tr style="background-color: #F8FAFC; font-weight: bold; height: 30px;">
-          <td colspan="4" style="text-align: right; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; padding-right: 10px;">TỔNG CỘNG:</td>
-          <td style="text-align: center; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${totalQuestions} câu</td>
-          <td style="text-align: center; color: #1D4ED8; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt;">${totalPoints.toFixed(1)} điểm</td>
-        </tr>
-      </tbody>
-    </table>
-  `;
-
-  return buildExcelBlob(html, 'Ma Trận Đề Thi');
+    zip.file('xl/sharedStrings.xml', sharedStrings);
+    return await zip.generateAsync({ type: 'blob' });
+  } catch (e) {
+    console.error('Lỗi khi sửa template Excel Matrix:', e);
+    return buildFallbackMatrixExcel(matrix, schoolName, examType, academicYear);
+  }
 }
 
-// Generate Excel for MOET Specification
-export function generateSpecificationExcel(
+// Generate real XLSX for Specification by modifying the official Excel template directly
+export async function generateSpecificationExcel(
   specifications: SpecificationItem[],
   schoolName: string,
   examType: string,
-  academicYear: string
-): Blob {
-  const rows = specifications.map((item) => `
-    <tr style="height: 35px; vertical-align: top;">
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; font-weight: bold; padding: 5px;">${item.skill}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; padding: 5px;">${item.knowledgeUnit}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; padding: 5px; text-align: justify;">${item.performanceIndicator}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; text-align: center; padding: 5px;">${item.recognitionCount > 0 ? `${item.recognitionCount} câu` : '-'}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; text-align: center; padding: 5px;">${item.comprehensionCount > 0 ? `${item.comprehensionCount} câu` : '-'}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; text-align: center; padding: 5px;">${item.applicationCount > 0 ? `${item.applicationCount} câu` : '-'}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; text-align: center; padding: 5px;">${item.highApplicationCount > 0 ? `${item.highApplicationCount} câu` : '-'}</td>
-      <td style="border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 10.5pt; text-align: center; font-weight: bold; background-color: #F8FAFC; padding: 5px;">${item.totalQuestions} câu<br>(${item.totalPoints.toFixed(1)}đ)</td>
-    </tr>
-  `).join('');
+  academicYear: string,
+  grade: string
+): Promise<Blob> {
+  const isFinal = examType.includes('Cuối kỳ');
+  const templatePath = isFinal
+    ? '/Tai lieu/Đặc tả Đề KT CUỐI KỲ II TA 8. 2026.xlsx'
+    : '/Tai lieu/Đặc tả Đề KT GKI TA 8.xlsx';
 
-  const html = `
-    <table>
-      <thead>
-        <tr>
-          <th colspan="8" style="font-size: 16pt; font-family: 'Times New Roman'; font-weight: bold; text-align: center; height: 40px;">BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐÁNH GIÁ MÔN TIẾNG ANH</th>
-        </tr>
-        <tr>
-          <th colspan="8" style="font-size: 11pt; font-family: 'Times New Roman'; text-align: center; height: 35px; font-style: italic;">
-            Trường: ${schoolName} | Loại bài: ${examType} | Năm học: ${academicYear}
-          </th>
-        </tr>
-        <tr style="height: 30px; background-color: #E2E8F0;">
-          <th style="width: 120px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Kỹ năng</th>
-          <th style="width: 160px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Chủ đề / Đơn vị kiến thức</th>
-          <th style="width: 320px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Yêu cầu cần đạt</th>
-          <th style="width: 90px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center; background-color: #DBEAFE;">Nhận biết</th>
-          <th style="width: 90px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center; background-color: #D1FAE5;">Thông hiểu</th>
-          <th style="width: 90px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center; background-color: #FEF3C7;">Vận dụng</th>
-          <th style="width: 90px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center; background-color: #FEE2E2;">Vận dụng cao</th>
-          <th style="width: 100px; border: 1px solid #000000; font-family: 'Times New Roman'; font-size: 11pt; font-weight: bold; text-align: center;">Tổng cộng</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-      </tbody>
-    </table>
-  `;
+  try {
+    const res = await fetch(templatePath);
+    if (!res.ok) throw new Error(`Không thể tải template: ${templatePath}`);
+    const arrayBuffer = await res.arrayBuffer();
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    
+    // Read and edit sharedStrings.xml
+    let sharedStrings = await zip.file('xl/sharedStrings.xml')!.async('text');
+    
+    sharedStrings = sharedStrings
+      .replace(/TRƯỜNG THCS ĐỒNG YÊN/g, schoolName.toUpperCase())
+      .replace(/2026-2027/g, academicYear)
+      .replace(/LỚP 8/g, grade.toUpperCase())
+      .replace(/Giữa kì I/gi, examType)
+      .replace(/GIỮA HỌC KÌ I/gi, examType.toUpperCase());
 
-  return buildExcelBlob(html, 'Đặc Tả Đề Thi');
-}
-
-// Common function to wrap HTML string into real Excel content
-function buildExcelBlob(htmlContent: string, worksheetName: string): Blob {
-  const template = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
-          xmlns:x="urn:schemas-microsoft-com:office:excel" 
-          xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <meta charset="utf-8">
-      <!--[if gte mso 9]>
-      <xml>
-        <x:ExcelWorkbook>
-          <x:ExcelWorksheets>
-            <x:ExcelWorksheet>
-              <x:Name>${worksheetName}</x:Name>
-              <x:WorksheetOptions>
-                <x:DisplayGridlines/>
-              </x:WorksheetOptions>
-            </x:ExcelWorksheet>
-          </x:ExcelWorksheets>
-        </x:ExcelWorkbook>
-      </xml>
-      <![endif]-->
-      <style>
-        table { border-collapse: collapse; }
-        th, td { border: 1px solid #000000; padding: 6px; }
-      </style>
-    </head>
-    <body>
-      ${htmlContent}
-    </body>
-    </html>
-  `;
-  return new Blob([template], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    zip.file('xl/sharedStrings.xml', sharedStrings);
+    return await zip.generateAsync({ type: 'blob' });
+  } catch (e) {
+    console.error('Lỗi khi sửa template Excel Spec:', e);
+    return buildFallbackSpecExcel(specifications, schoolName, examType, academicYear);
+  }
 }

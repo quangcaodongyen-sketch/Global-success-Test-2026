@@ -36,21 +36,23 @@ export async function exportExamSuiteZip(suite: FullExamSuite): Promise<Blob> {
   rootFolder.file(`01_Matran_Dacta_${gradeClean}_${examTypeClean}.docx`, matrixSpecBlob);
 
   // 1.1 Excel versions of Matrix & Spec
-  const matrixExcelBlob = generateMatrixExcel(
+  const matrixExcelBlob = await generateMatrixExcel(
     suite.matrix,
     primaryPaper.schoolName || primaryPaper.adminInfo.schoolName,
     primaryPaper.examType,
-    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear
+    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear,
+    primaryPaper.grade
   );
-  rootFolder.file(`01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xls`, matrixExcelBlob);
+  rootFolder.file(`01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xlsx`, matrixExcelBlob);
 
-  const specExcelBlob = generateSpecificationExcel(
+  const specExcelBlob = await generateSpecificationExcel(
     suite.specifications,
     primaryPaper.schoolName || primaryPaper.adminInfo.schoolName,
     primaryPaper.examType,
-    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear
+    primaryPaper.academicYear || primaryPaper.adminInfo.academicYear,
+    primaryPaper.grade
   );
-  rootFolder.file(`01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xls`, specExcelBlob);
+  rootFolder.file(`01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xlsx`, specExcelBlob);
 
   // 2. Detap_MaDeXXX.docx for each paper variant
   for (const paper of suite.papers) {
@@ -80,8 +82,8 @@ HỒ SƠ BỘ ĐỀ KIỂM TRA MÔN TIẾNG ANH THCS (GLOBAL SUCCESS)
 
 2. THÀNH PHẦN HỒ SƠ TỆP NÉN:
 - 01_Matran_Dacta_${gradeClean}_${examTypeClean}.docx : Bảng Ma trận & Bản đặc tả chi tiết dạng Word.
-- 01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xls : Ma trận đề kiểm tra dạng Excel.
-- 01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xls : Bản đặc tả đề kiểm tra dạng Excel.
+- 01_MaTran_DeKT_${gradeClean}_${examTypeClean}.xlsx : Ma trận đề kiểm tra dạng Excel.
+- 01_DacTa_DeKT_${gradeClean}_${examTypeClean}.xlsx : Bản đặc tả đề kiểm tra dạng Excel.
 ${suite.papers.map((p) => `- 02_DeKiemTra_MaDe${p.code}.docx : Đề kiểm tra học sinh Mã đề ${p.code}.\n- 03_DapAn_HuongDanCham_MaDe${p.code}.docx : Đáp án & Hướng dẫn chấm Mã đề ${p.code}.`).join('\n')}
 
 3. TIÊU CHUẨN THỂ THỨC VĂN BẢN (NGHỊ ĐỊNH 30/2020/NĐ-CP):
