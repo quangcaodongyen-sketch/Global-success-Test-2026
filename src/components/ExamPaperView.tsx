@@ -247,23 +247,42 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
                   {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
-                    const isEssay = q.type === 'ESSAY';
+                    const isEssay = q.type === 'ESSAY' || q.type === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
                     const currentQNum = isEssay ? null : globalQIdx++;
                     return (
                       <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">
                         <p className="leading-snug">
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
-                            if (q.type === 'ESSAY') {
+                            if (isEssay) {
+                              let promptLines = (q.prompt || '').split(/(?:\n|(?=- )|(?= - ))/).map(l => l.trim()).filter(l => l.length > 0);
+                              
+                              if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('write a paragraph')) {
+                                promptLines.shift();
+                              }
+                              if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('following suggestions')) {
+                                promptLines.shift();
+                              }
+
                               return (
-                                <>
-                                  <span className="font-bold">{q.prompt}</span>
+                                <div className="ml-4 space-y-1 mt-1">
+                                  {promptLines.map((pt, i) => {
+                                    let text = pt;
+                                    if (!text.startsWith('-') && promptLines.length > 1) {
+                                      text = `- ${text}`;
+                                    }
+                                    return (
+                                      <span key={i} className="block italic text-slate-700">
+                                        {text}
+                                      </span>
+                                    );
+                                  })}
                                   {showCognition && (
-                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                                    <span className="block text-[11px] text-slate-500 font-sans italic mt-1">
                                       [{q.points}đ - {q.cognitionLevel}]
                                     </span>
                                   )}
-                                </>
+                                </div>
                               );
                             }
                             return (
@@ -299,7 +318,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                         )}
 
                         {/* Essay prompt space */}
-                        {q.type === 'ESSAY' && (
+                        {isEssay && (
                           <div className="mt-2 pl-4 text-slate-400 font-mono text-xs space-y-1">
                             {Array(8).fill(null).map((_, i) => (
                               <p key={i}>..........................................................................................................................................................................</p>
