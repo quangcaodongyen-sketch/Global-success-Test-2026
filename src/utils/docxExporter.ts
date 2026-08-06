@@ -278,9 +278,9 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       }
 
       // Render Options if question has options
-      if (q.options && q.options.length > 0) {
+      if (Array.isArray(q.options) && q.options.length > 0) {
         const optionRuns = q.options.map(
-          (opt) => `${opt.key}. ${opt.text}`
+          (opt) => `${opt.key || ''}. ${opt.text || ''}`
         );
 
         // Display 2x2 or 4 across

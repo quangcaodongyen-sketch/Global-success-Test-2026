@@ -291,10 +291,10 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                         </p>
 
                         {/* MCQ Options */}
-                        {q.options && q.options.length > 0 && (
+                        {Array.isArray(q.options) && q.options.length > 0 && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1.5 pl-4 font-sans text-slate-800">
-                            {q.options.map((opt) => (
-                              <div key={opt.key} className="flex items-center gap-1.5">
+                            {q.options.map((opt, i) => (
+                              <div key={opt.key || i} className="flex items-center gap-1.5">
                                 <span className="font-bold text-indigo-900">{opt.key}.</span>
                                 <span>{opt.text}</span>
                               </div>

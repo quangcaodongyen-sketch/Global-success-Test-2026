@@ -78,7 +78,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
   paper.sections.forEach((sec) => {
     sec.questions.forEach((q) => {
       totalPoints += q.points;
-      const isMcq = q.options && q.options.length > 0;
+      const isMcq = Array.isArray(q.options) && q.options.length > 0;
       if (isMcq) {
         totalMcq++;
         if (answers[q.id] === q.correctAnswer) {
@@ -218,7 +218,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
               {sec.questions.map((q, qIdx) => {
                 const isSelected = answers[q.id] !== undefined;
                 const isCorrect = answers[q.id] === q.correctAnswer;
-                const isMcq = q.options && q.options.length > 0;
+                const isMcq = Array.isArray(q.options) && q.options.length > 0;
 
                 return (
                   <div
