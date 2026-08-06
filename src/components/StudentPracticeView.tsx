@@ -190,7 +190,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
 
       {/* Sections List */}
       <div className="space-y-6">
-        {(paper.sections || []).map((sec, sIdx) => (
+        {(Array.isArray(paper.sections) ? paper.sections : []).map((sec, sIdx) => (
           <div
             key={sIdx}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4"
@@ -215,7 +215,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
 
             {/* Questions List */}
             <div className="space-y-5 pt-2">
-              {(sec.questions || []).map((q, qIdx) => {
+              {(Array.isArray(sec.questions) ? sec.questions : []).map((q, qIdx) => {
                 const isSelected = answers[q.id] !== undefined;
                 const isCorrect = answers[q.id] === q.correctAnswer;
                 const isMcq = Array.isArray(q.options) && q.options.length > 0;
@@ -319,7 +319,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
       </div>
 
       {/* Speaking Topics if any */}
-      {paper.speakingTopics && paper.speakingTopics.length > 0 && (
+      {Array.isArray(paper.speakingTopics) && paper.speakingTopics.length > 0 && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
           <div>
             <h2 className="text-base sm:text-lg font-extrabold text-indigo-950 dark:text-white border-b pb-2">
@@ -331,7 +331,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {paper.speakingTopics.map((topic, tIdx) => (
+            {(Array.isArray(paper.speakingTopics) ? paper.speakingTopics : []).map((topic, tIdx) => (
               <div key={topic.id} className="bg-slate-50 dark:bg-slate-950/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
                 <span className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-400 font-bold text-[10px] px-2 py-0.5 rounded-full">
                   Topic {tIdx + 1}
@@ -342,7 +342,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
                 <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Guide Questions:</p>
                   <ul className="list-disc pl-4 space-y-1 text-xs text-slate-500">
-                    {topic.guideQuestions.map((q, i) => (
+                    {(Array.isArray(topic.guideQuestions) ? topic.guideQuestions : []).map((q, i) => (
                       <li key={i}>{q}</li>
                     ))}
                   </ul>
@@ -352,7 +352,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
                   <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px]">
                     <p className="font-bold text-emerald-800 dark:text-emerald-400">Suggested Answers:</p>
                     <ul className="list-decimal pl-4 space-y-1 text-slate-500 italic">
-                      {topic.suggestedAnswers.map((ans, i) => (
+                      {(Array.isArray(topic.suggestedAnswers) ? topic.suggestedAnswers : []).map((ans, i) => (
                         <li key={i}>{ans}</li>
                       ))}
                     </ul>

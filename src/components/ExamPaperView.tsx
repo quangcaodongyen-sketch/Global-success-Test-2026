@@ -33,7 +33,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
   showCognition,
   onToggleCognition,
 }) => {
-  const safePapers = papers || [];
+  const safePapers = Array.isArray(papers) ? papers : [];
   const currentPaper = safePapers.find((p) => p.code === activePaperCode) || safePapers[0];
   const [showAudioScript, setShowAudioScript] = useState(false);
 
@@ -212,7 +212,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         <div className="space-y-6">
           {(() => {
             let globalQIdx = 1;
-            return (currentPaper.sections || []).map((section, sIdx) => (
+            const safeSections = Array.isArray(currentPaper.sections) ? currentPaper.sections : [];
+            return safeSections.map((section, sIdx) => (
               <div key={sIdx} className="space-y-3">
                 <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
                   {section.title}
@@ -232,7 +233,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
 
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
-                  {(section.questions || []).map((q, qIdx) => {
+                  {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
                     const isEssay = q.type === 'ESSAY';
                     const currentQNum = isEssay ? null : globalQIdx++;
                     return (
@@ -328,7 +329,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         </div>
 
         {/* Speaking Section if present */}
-        {currentPaper.speakingTopics && currentPaper.speakingTopics.length > 0 && (
+        {Array.isArray(currentPaper.speakingTopics) && currentPaper.speakingTopics.length > 0 && (
           <div className="mt-6 pt-4 border-t border-slate-300 space-y-4">
             <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
               SECTION E: SPEAKING (2.0 pts - CHẤM RIÊNG)
