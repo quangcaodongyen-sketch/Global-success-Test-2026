@@ -38,7 +38,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
 
   if (!currentPaper) return null;
 
-  const admin = currentPaper.adminInfo;
+  const admin = currentPaper.adminInfo || {};
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-5">
@@ -151,7 +151,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
               {admin.schoolName}
             </p>
             <p className="font-bold text-xs sm:text-sm text-indigo-900 mt-0.5">
-              ĐỀ KIỂM TRA {currentPaper.examType.toUpperCase()} MÔN TIẾNG ANH {currentPaper.grade.toUpperCase()}
+              ĐỀ KIỂM TRA {currentPaper.examType?.toUpperCase()} MÔN TIẾNG ANH {currentPaper.grade?.toUpperCase()}
             </p>
             <p className="text-xs italic text-slate-700">
               Năm học: {admin.academicYear} | Thời gian: {admin.durationMinutes} phút
@@ -174,7 +174,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
             <p className="font-medium">Họ và tên thí sinh: ....................................................................................</p>
             <p className="font-medium">Lớp: ......................... SBD: ............................................................................</p>
           </div>
-          {currentPaper.examType.toUpperCase().includes('CUỐI KÌ') || currentPaper.examType.toUpperCase().includes('CUỐI KỲ') ? (
+          {((currentPaper.examType || '').toUpperCase().includes('CUỐI KÌ') || (currentPaper.examType || '').toUpperCase().includes('CUỐI KỲ')) ? (
             <div className="grid grid-cols-4 border-t sm:border-t-0 border-slate-800 text-center font-sans">
               <div className="col-span-2 border-r border-slate-800 flex flex-col">
                 <div className="border-b border-slate-800 py-1 bg-slate-50 font-bold uppercase text-[9px]">Mark</div>
@@ -211,7 +211,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         <div className="space-y-6">
           {(() => {
             let globalQIdx = 1;
-            return currentPaper.sections.map((section, sIdx) => (
+            return (currentPaper.sections || []).map((section, sIdx) => (
               <div key={sIdx} className="space-y-3">
                 <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
                   {section.title}
@@ -231,7 +231,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
 
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
-                  {section.questions.map((q, qIdx) => {
+                  {(section.questions || []).map((q, qIdx) => {
                     const isEssay = q.type === 'ESSAY';
                     const currentQNum = isEssay ? null : globalQIdx++;
                     return (
@@ -240,8 +240,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
                             if (q.type === 'ESSAY') {
-                              const lines = q.prompt.split('\n');
-                              const firstLine = lines[0];
+                              const lines = (q.prompt || '').split('\n');
+                              const firstLine = lines[0] || '';
                               const match = firstLine.match(/(\([\d\-\s\.]+\s*words\))/i);
 
                               let firstLineEl;
@@ -342,7 +342,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                   <p className="italic text-slate-600 mb-1">{topic.description}</p>
                   <div className="pl-3 space-y-0.5">
                     <p className="font-semibold text-slate-700">Guide questions:</p>
-                    {topic.guideQuestions.map((q, qIdx) => (
+                    {Array.isArray(topic.guideQuestions) && topic.guideQuestions.map((q, qIdx) => (
                       <p key={qIdx} className="text-slate-600">- {q}</p>
                     ))}
                   </div>

@@ -857,7 +857,7 @@ function createExamHeaderTable(
 }
 
 function createStudentInfoTable(examType: string): Table {
-  const isFinal = examType.toUpperCase().includes('CUỐI KÌ') || examType.toUpperCase().includes('CUỐI KỲ');
+  const isFinal = (examType || '').toUpperCase().includes('CUỐI KÌ') || (examType || '').toUpperCase().includes('CUỐI KỲ');
 
   const marksTableRows = isFinal
     ? [
