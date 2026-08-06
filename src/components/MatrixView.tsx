@@ -85,7 +85,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ matrix, summary, onDownl
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 text-slate-800 font-medium">
-            {(matrix || []).map((item, idx) => (
+            {(Array.isArray(matrix) ? matrix : []).map((item, idx) => (
               <tr key={item?.id || idx} className="hover:bg-slate-50 transition">
                 <td className="p-3 border-r border-slate-200 text-center text-slate-500 font-mono">{idx + 1}</td>
                 <td className="p-3 border-r border-slate-200 font-bold text-indigo-900">{item.skill}</td>

@@ -66,7 +66,7 @@ export const AnswerKeyView: React.FC<AnswerKeyViewProps> = ({ paper, onDownloadD
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-slate-800">
-              {(paper.answerKey || []).map((item) => (
+              {(Array.isArray(paper.answerKey) ? paper.answerKey : []).map((item) => (
                 <tr key={item?.questionNumber || Math.random()} className="hover:bg-slate-50 transition">
                   <td className="p-2.5 border-r border-slate-200 text-center font-bold text-slate-700">
                     {item.questionNumber}
