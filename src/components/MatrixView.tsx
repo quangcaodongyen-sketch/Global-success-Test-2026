@@ -48,25 +48,25 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ matrix, summary, onDownl
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg text-center">
           <p className="text-[11px] font-bold text-blue-700 uppercase">Nhận Biết</p>
-          <p className="text-xl font-extrabold text-blue-900 my-0.5">{summary.recognitionRatio}%</p>
+          <p className="text-xl font-extrabold text-blue-900 my-0.5">{summary?.recognitionRatio || 0}%</p>
           <p className="text-[10px] text-blue-600">Mức độ cơ bản</p>
         </div>
 
         <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-center">
           <p className="text-[11px] font-bold text-emerald-700 uppercase">Thông Hiểu</p>
-          <p className="text-xl font-extrabold text-emerald-900 my-0.5">{summary.comprehensionRatio}%</p>
+          <p className="text-xl font-extrabold text-emerald-900 my-0.5">{summary?.comprehensionRatio || 0}%</p>
           <p className="text-[10px] text-emerald-600">Hiểu bản chất ngữ pháp</p>
         </div>
 
         <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-center">
           <p className="text-[11px] font-bold text-amber-700 uppercase">Vận Dụng</p>
-          <p className="text-xl font-extrabold text-amber-900 my-0.5">{summary.applicationRatio}%</p>
+          <p className="text-xl font-extrabold text-amber-900 my-0.5">{summary?.applicationRatio || 0}%</p>
           <p className="text-[10px] text-amber-600">Áp dụng làm bài viết/đọc</p>
         </div>
 
         <div className="bg-rose-50 border border-rose-200 p-3 rounded-lg text-center">
           <p className="text-[11px] font-bold text-rose-700 uppercase">Vận Dụng Cao</p>
-          <p className="text-xl font-extrabold text-rose-900 my-0.5">{summary.highApplicationRatio}%</p>
+          <p className="text-xl font-extrabold text-rose-900 my-0.5">{summary?.highApplicationRatio || 0}%</p>
           <p className="text-[10px] text-rose-600">Phân loại học sinh giỏi</p>
         </div>
       </div>
@@ -85,8 +85,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ matrix, summary, onDownl
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 text-slate-800 font-medium">
-            {matrix.map((item, idx) => (
-              <tr key={item.id || idx} className="hover:bg-slate-50 transition">
+            {(matrix || []).map((item, idx) => (
+              <tr key={item?.id || idx} className="hover:bg-slate-50 transition">
                 <td className="p-3 border-r border-slate-200 text-center text-slate-500 font-mono">{idx + 1}</td>
                 <td className="p-3 border-r border-slate-200 font-bold text-indigo-900">{item.skill}</td>
                 <td className="p-3 border-r border-slate-200">{item.subSkill}</td>

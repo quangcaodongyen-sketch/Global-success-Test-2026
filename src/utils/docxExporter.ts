@@ -278,8 +278,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       }
 
       // Render Options if question has options
-      if (Array.isArray(q.options) && q.options.length > 0) {
-        const optionRuns = q.options.map(
+      if (q.options && q.options.length > 0) {
+        const optionRuns = (q.options || []).map(
           (opt) => `${opt.key || ''}. ${opt.text || ''}`
         );
 
@@ -387,7 +387,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
           indent: { left: 200 },
           children: [
             new TextRun({
-              text: `Guide questions:\n` + topic.guideQuestions.map((q) => `- ${q}`).join('\n'),
+              text: `Guide questions:\n` + (topic.guideQuestions || []).map((q) => `- ${q}`).join('\n'),
               size: 24,
               font: FONT_FAMILY,
             }),
@@ -628,7 +628,7 @@ export async function generateAnswerKeyDocx(paper: ExamPaper): Promise<Blob> {
               spacing: { after: 100 },
               children: [
                 new TextRun({
-                  text: `Suggested Answers:\n` + (topic.suggestedAnswers || topic.guideQuestions.map(() => 'N/A')).map((ans, aIdx) => `Q${aIdx+1}: ${ans}`).join('\n'),
+                  text: `Suggested Answers:\n` + (topic.suggestedAnswers || (topic.guideQuestions || []).map(() => 'N/A')).map((ans, aIdx) => `Q${aIdx+1}: ${ans}`).join('\n'),
                   size: 24,
                   italics: true,
                   font: FONT_FAMILY,
@@ -1135,7 +1135,7 @@ function createMatrixTable(matrix: MatrixItem[]): Table {
       })
   );
 
-  const rows = matrix.map((item, idx) => {
+  const rows = (matrix || []).map((item, idx) => {
     return new TableRow({
       children: [
         new TableCell({
@@ -1246,7 +1246,7 @@ function createSpecTable(specs: SpecificationItem[]): Table {
       })
   );
 
-  const rows = specs.map((item) => {
+  const rows = (specs || []).map((item) => {
     return new TableRow({
       children: [
         new TableCell({
@@ -1422,7 +1422,7 @@ function createAnswerKeyTable(paper: ExamPaper): Table {
       })
   );
 
-  const rows = paper.answerKey.map((item) => {
+  const rows = (paper.answerKey || []).map((item) => {
     return new TableRow({
       children: [
         new TableCell({

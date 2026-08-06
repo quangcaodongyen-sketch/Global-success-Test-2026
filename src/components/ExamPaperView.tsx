@@ -33,7 +33,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
   showCognition,
   onToggleCognition,
 }) => {
-  const currentPaper = papers.find((p) => p.code === activePaperCode) || papers[0];
+  const safePapers = papers || [];
+  const currentPaper = safePapers.find((p) => p.code === activePaperCode) || safePapers[0];
   const [showAudioScript, setShowAudioScript] = useState(false);
 
   if (!currentPaper) return null;
@@ -49,7 +50,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
           <span className="text-xs font-bold text-slate-700 uppercase tracking-wider mr-1">
             Mã Đề Thi:
           </span>
-          {papers.map((paper) => (
+          {safePapers.map((paper) => (
             <button
               key={paper.code}
               onClick={() => onSelectPaperCode(paper.code)}
@@ -70,7 +71,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
             title="Tạo mã đề xáo trộn tiếp theo"
           >
             <CopyPlus className="w-3.5 h-3.5 text-emerald-600" />
-            <span>+ Tạo Mã Đề {papers.length + 1}</span>
+            <span>+ Tạo Mã Đề {safePapers.length + 1}</span>
           </button>
         </div>
 

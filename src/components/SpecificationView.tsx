@@ -63,8 +63,8 @@ export const SpecificationView: React.FC<SpecificationViewProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 text-slate-800">
-            {specifications.map((item, idx) => (
-              <tr key={item.id || idx} className="hover:bg-slate-50 transition">
+            {(specifications || []).map((item, idx) => (
+              <tr key={item?.id || idx} className="hover:bg-slate-50 transition">
                 <td className="p-2.5 border-r border-slate-200 font-bold text-indigo-900 align-top">
                   {item.skill}
                 </td>

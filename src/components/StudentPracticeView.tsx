@@ -190,7 +190,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
 
       {/* Sections List */}
       <div className="space-y-6">
-        {paper.sections.map((sec, sIdx) => (
+        {(paper.sections || []).map((sec, sIdx) => (
           <div
             key={sIdx}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4"
@@ -215,7 +215,7 @@ export const StudentPracticeView: React.FC<StudentPracticeViewProps> = ({ paper,
 
             {/* Questions List */}
             <div className="space-y-5 pt-2">
-              {sec.questions.map((q, qIdx) => {
+              {(sec.questions || []).map((q, qIdx) => {
                 const isSelected = answers[q.id] !== undefined;
                 const isCorrect = answers[q.id] === q.correctAnswer;
                 const isMcq = Array.isArray(q.options) && q.options.length > 0;
