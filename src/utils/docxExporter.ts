@@ -1075,7 +1075,7 @@ function createStudentInfoTable(examType: string): Table {
                     font: FONT_FAMILY,
                   }),
                   new TextRun({
-                    text: '____________________________________________________',
+                    text: '____________________________________',
                     size: 26,
                     font: FONT_FAMILY,
                   }),

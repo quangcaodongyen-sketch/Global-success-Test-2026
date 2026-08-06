@@ -102,6 +102,15 @@ YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ THI TỪ MẪU:
     const isFinalTerm = examType.includes('Cuối kỳ');
     const isMidTerm = examType.includes('Giữa kỳ');
 
+    let wordCountRange = '80-100';
+    if (grade.includes('6') || grade.includes('7')) {
+      wordCountRange = '60-80';
+    } else if (grade.includes('8')) {
+      wordCountRange = '80-100';
+    } else if (grade.includes('9')) {
+      wordCountRange = '100-120';
+    }
+
     let examStructureRules = '';
     if (isMidTerm) {
       examStructureRules = `
@@ -113,7 +122,7 @@ CẤU TRÚC ĐỀ THI GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT 
 - Part 5. Read the passage and choose the best answer for each question. (1.25 pts) -> Gồm 5 câu (28-32), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 8. Write a short paragraph (80 - 100 words) about a given topic. (1 pt) -> 1 câu tự luận viết đoạn văn (Câu 37).
+- Part 8. Write a short paragraph (${wordCountRange} words) about a given topic. (1 pt) -> 1 câu tự luận viết đoạn văn (Không đánh số câu).
 `;
     } else if (isFinalTerm) {
       examStructureRules = `
@@ -125,7 +134,7 @@ CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG �
 - Part 5. Read the passage and choose the best answer for each question. (1.0 pt) -> Gồm 5 câu (28-32), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.4 pt) -> Gồm 2 câu (33-34), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 7. Reorder the words/phrases to make completed sentences. (0.2 pt) -> Gồm 1 câu (câu 35), 0.2 điểm. Đáp án: A, B, C.
-- Part 8. Write a paragraph (80-100 words) about a given topic. (1.0 pt) -> 1 câu tự luận viết đoạn văn (Câu 36).
+- Part 8. Write a paragraph (${wordCountRange} words) about a given topic. (1.0 pt) -> 1 câu tự luận viết đoạn văn (Không đánh số câu).
 `;
     } else {
       examStructureRules = `
@@ -139,7 +148,7 @@ Nhiệm vụ của bạn là sinh BỘ ĐỀ KIỂM TRA CHUẨN ĐẦY ĐỦ g�
 1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề thi (${isFinalTerm ? '8.0' : '10.0'} điểm).
 2. Bảng Bản đặc tả đề kiểm tra (Specifications) chi tiết chuẩn Bộ GDĐT.
 3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới.
-4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng (câu 36 của Cuối kỳ, câu 37 của Giữa kỳ), bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng 80-100 từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
+4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng (câu 36 của Cuối kỳ, câu 37 của Giữa kỳ), bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng ${wordCountRange} từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
 5. Luôn sinh ra 3 chủ đề nói (speakingTopics) bám sát các Unit học sinh đã học, mỗi chủ đề gồm: tên chủ đề (topicName), mô tả tình huống bằng tiếng Anh (description), 3 câu hỏi gợi ý bằng tiếng Anh (guideQuestions) và 3 câu trả lời mẫu gợi ý tương ứng (suggestedAnswers).
 
 YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC NGHIỆM:
@@ -149,6 +158,15 @@ YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC N
   + Lựa chọn A: "T" (ví dụ: {"key": "A", "text": "T"})
   + Lựa chọn B: "F" (ví dụ: {"key": "B", "text": "F"})
   (Tức là không viết nguyên chữ "True"/"False" hay "Đúng"/"Sai" ở phần text của options).
+
+YÊU CẦU ĐỐI VỚI BÀI VIẾT LUẬN CUỐI CÙNG (PART 8):
+- Phần 'prompt' của câu hỏi viết luận này BẮT BUỘC chỉ được chứa duy nhất:
+  1. Đúng 1 câu yêu cầu viết đoạn văn bằng tiếng Anh (ví dụ: "Write a paragraph (${wordCountRange} words) about...").
+  2. Tiếp theo ngay dưới là danh sách gợi ý gồm đúng 4 ý ngắn gọn (mỗi ý từ 2-4 từ) được bố trí theo định dạng:
+     - Suggested ideas:
+     + [Gợi ý 1]                  + [Gợi ý 2]
+     + [Gợi ý 3]                  + [Gợi ý 4]
+- TUYỆT ĐỐI không viết thêm bất kỳ câu dẫn dắt, giải thích hay đoạn văn dài dòng nào khác trong phần đề bài này.
 
 
 Yêu cầu cấu trúc và biểu điểm bắt buộc:

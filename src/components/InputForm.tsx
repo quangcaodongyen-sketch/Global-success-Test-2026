@@ -132,9 +132,9 @@ export const InputForm: React.FC<InputFormProps> = ({
   const handleUseStandardMoetTemplate = () => {
     setUploadedTemplates([
       {
-        name: 'Mau_MaTran_DacTa_BoGDDT_2026.docx',
+        name: 'Mau_TiengAnh_THCS_TuyenQuang.docx',
         type: 'matrix',
-        content: 'Mẫu ma trận và bản đặc tả chuẩn Bộ Giáo Dục và Đào Tạo 2026',
+        content: 'Mẫu ma trận và bản đặc tả Tiếng Anh THCS Tuyên Quang',
         uploadDate: new Date().toLocaleDateString('vi-VN'),
       },
     ]);
@@ -182,71 +182,81 @@ export const InputForm: React.FC<InputFormProps> = ({
             <Clock className="w-4 h-4 text-indigo-600" />
             2. Loại Bài Kiểm Tra
           </label>
-          <select
-            value={examType}
-            onChange={(e) => setExamType(e.target.value as ExamType)}
-            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-          >
-            <option value="15 phút">Kiểm tra 15 phút</option>
-            <option value="Giữa kỳ 1">Giữa kỳ 1</option>
-            <option value="Cuối kỳ 1">Cuối kỳ 1</option>
-            <option value="Giữa kỳ 2">Giữa kỳ 2</option>
-            <option value="Cuối kỳ 2">Cuối kỳ 2</option>
-          </select>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { val: '15 phút', label: 'Kiểm tra 15 phút', activeClass: 'bg-emerald-600 text-white border-emerald-600', inactiveClass: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70' },
+              { val: 'Giữa kỳ 1', label: 'Giữa kỳ 1', activeClass: 'bg-sky-600 text-white border-sky-600', inactiveClass: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100/70' },
+              { val: 'Cuối kỳ 1', label: 'Cuối kỳ 1', activeClass: 'bg-indigo-600 text-white border-indigo-600', inactiveClass: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100/70' },
+              { val: 'Giữa kỳ 2', label: 'Giữa kỳ 2', activeClass: 'bg-rose-600 text-white border-rose-600', inactiveClass: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100/70' },
+              { val: 'Cuối kỳ 2', label: 'Cuối kỳ 2', activeClass: 'bg-amber-600 text-white border-amber-600', inactiveClass: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/70' }
+            ].map((t) => (
+              <button
+                key={t.val}
+                type="button"
+                onClick={() => setExamType(t.val as ExamType)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition border cursor-pointer ${
+                  examType === t.val ? t.activeClass + ' shadow-sm' : t.inactiveClass
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* 3. Checkbox Units Selection */}
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-            <ListChecks className="w-4 h-4 text-indigo-600" />
-            3. Phạm Vi Kiến Thức (Chọn Units - {grade})
-          </label>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-200">
+          <div className="flex items-center gap-1.5">
+            <BookOpen className="w-4 h-5 text-indigo-600" />
+            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              3. Chọn phạm vi kiến thức (Các Unit bài học)
+            </h4>
+          </div>
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={handleSelectAllUnits}
-              className="text-[11px] text-indigo-600 hover:underline font-semibold"
+              className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-white border border-slate-200 px-2.5 py-1 rounded-md transition cursor-pointer"
             >
-              Chọn tất cả
+              Chọn Tất Cả
             </button>
-            <span className="text-slate-300">•</span>
             <button
               type="button"
               onClick={handleDeselectAllUnits}
-              className="text-[11px] text-slate-500 hover:underline font-medium"
+              className="text-[10px] font-bold text-slate-500 hover:text-slate-700 bg-white border border-slate-200 px-2.5 py-1 rounded-md transition cursor-pointer"
             >
-              Bỏ chọn
+              Bỏ Chọn Tất Cả
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
           {currentUnits.map((unit) => {
-            const isChecked = selectedUnitIds.includes(unit.title);
+            const isSelected = selectedUnitIds.includes(unit.title);
             return (
-              <div
-                key={unit.id}
-                onClick={() => toggleUnit(unit.title)}
-                className={`p-2.5 rounded-lg border text-xs cursor-pointer transition flex items-start gap-2 ${
-                  isChecked
-                    ? 'bg-indigo-50/90 border-indigo-300 text-indigo-900 shadow-xs'
-                    : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100/60'
+              <label
+                key={unit.title}
+                className={`flex items-start gap-2 p-2.5 rounded-xl border transition cursor-pointer ${
+                  isSelected
+                    ? 'bg-indigo-50/50 border-indigo-300 text-indigo-950 font-medium'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
-                <div className="mt-0.5 shrink-0">
-                  {isChecked ? (
-                    <CheckSquare className="w-4 h-4 text-indigo-600" />
-                  ) : (
-                    <Square className="w-4 h-4 text-slate-400" />
-                  )}
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleUnit(unit.title)}
+                  className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                />
+                <div className="text-[11px] leading-tight select-none">
+                  <p className="font-bold text-slate-800">{unit.title}</p>
+                  <p className="text-slate-500 mt-0.5 truncate max-w-[170px]" title={unit.topic}>
+                    {unit.topic}
+                  </p>
                 </div>
-                <div>
-                  <p className="font-semibold">{unit.title}</p>
-                  <p className="text-[11px] text-slate-500 line-clamp-1">{unit.topic}</p>
-                </div>
-              </div>
+              </label>
             );
           })}
         </div>
@@ -256,7 +266,7 @@ export const InputForm: React.FC<InputFormProps> = ({
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <User className="w-4 h-4 text-indigo-600" />
-          4. Thông Tin Hành Chính (Tiêu Đề Báo Cáo & Nghị Định 30)
+          Thông tin
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

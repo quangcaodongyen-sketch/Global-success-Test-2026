@@ -41,7 +41,7 @@ export const TemplateUploader: React.FC<TemplateUploaderProps> = ({
           className="text-xs font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1 rounded-md flex items-center gap-1 transition"
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>Dùng Mẫu Chuẩn Bộ GDĐT</span>
+          <span>Mẫu Tiếng Anh THCS Tuyên Quang</span>
         </button>
       </div>
 
