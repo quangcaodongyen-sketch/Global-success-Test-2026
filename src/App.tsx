@@ -45,6 +45,7 @@ export default function App() {
   const [isDecreeModalOpen, setIsDecreeModalOpen] = useState<boolean>(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [practicePaper, setPracticePaper] = useState<ExamPaper | null>(null);
+  const [showCognition, setShowCognition] = useState<boolean>(true);
 
   // API Key & Model settings states
   const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
@@ -177,7 +178,7 @@ export default function App() {
 
   const handleDownloadPaperDocx = async (paper: ExamPaper) => {
     try {
-      const blob = await generateExamPaperDocx(paper);
+      const blob = await generateExamPaperDocx(paper, showCognition);
       downloadBlob(blob, `Detap_MaDe${paper.code}.docx`);
       showToast(`📥 Đã tải xuống tệp Detap_MaDe${paper.code}.docx!`);
     } catch (e: any) {
@@ -199,7 +200,7 @@ export default function App() {
   const handleExportZip = async () => {
     if (!suite) return;
     try {
-      const zipBlob = await exportExamSuiteZip(suite);
+      const zipBlob = await exportExamSuiteZip(suite, showCognition);
       const paper0 = suite.papers[0];
       const fileName = `BoDe_TiengAnh_${paper0.grade.replace(/\s+/g, '')}_${paper0.examType.replace(/\s+/g, '_')}.zip`;
       downloadBlob(zipBlob, fileName);
@@ -361,6 +362,8 @@ export default function App() {
                       onGenerateNextVariant={handleGenerateNextVariant}
                       onDownloadPaperDocx={handleDownloadPaperDocx}
                       onPracticeOnline={(paper) => setPracticePaper(paper)}
+                      showCognition={showCognition}
+                      onToggleCognition={setShowCognition}
                     />
                   )}
 

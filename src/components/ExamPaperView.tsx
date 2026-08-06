@@ -19,6 +19,8 @@ interface ExamPaperViewProps {
   onGenerateNextVariant: () => void;
   onDownloadPaperDocx: (paper: ExamPaper) => void;
   onPracticeOnline: (paper: ExamPaper) => void;
+  showCognition: boolean;
+  onToggleCognition: (val: boolean) => void;
 }
 
 export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
@@ -28,6 +30,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
   onGenerateNextVariant,
   onDownloadPaperDocx,
   onPracticeOnline,
+  showCognition,
+  onToggleCognition,
 }) => {
   const currentPaper = papers.find((p) => p.code === activePaperCode) || papers[0];
   const [showAudioScript, setShowAudioScript] = useState(false);
@@ -97,6 +101,19 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         </div>
       </div>
 
+      {/* Toggle Cognition Levels Option */}
+      <div className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+        <label className="flex items-center gap-2 font-semibold text-slate-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showCognition}
+            onChange={(e) => onToggleCognition(e.target.checked)}
+            className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+          />
+          <span>Hiển thị ghi chú mức độ kiến thức và điểm số câu hỏi kế bên câu hỏi (Ví dụ: <span className="italic text-slate-500 font-normal">[0.2đ - Nhận biết]</span>)</span>
+        </label>
+      </div>
+
       {/* Audio Script Banner if Listening section exists */}
       {currentPaper.audioScript && (
         <div className="bg-slate-900 text-slate-100 rounded-xl p-3.5 border border-slate-700">
@@ -157,10 +174,37 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
             <p className="font-medium">Họ và tên thí sinh: ....................................................................................</p>
             <p className="font-medium">Lớp: ......................... SBD: ............................................................................</p>
           </div>
-          <div className="p-3 text-center bg-slate-50 flex flex-col items-center justify-center">
-            <p className="font-bold uppercase text-[11px] text-slate-700">Điểm Số / Lời Phê</p>
-            <div className="h-10 border-b border-dashed border-slate-300 w-full mt-1"></div>
-          </div>
+          {currentPaper.examType.toUpperCase().includes('CUỐI KÌ') || currentPaper.examType.toUpperCase().includes('CUỐI KỲ') ? (
+            <div className="grid grid-cols-4 border-t sm:border-t-0 border-slate-800 text-center font-sans">
+              <div className="col-span-2 border-r border-slate-800 flex flex-col">
+                <div className="border-b border-slate-800 py-1 bg-slate-50 font-bold uppercase text-[9px]">Mark</div>
+                <div className="grid grid-cols-2 flex-1">
+                  <div className="border-r border-slate-800 flex flex-col justify-between py-1">
+                    <span className="font-semibold text-[9px]">Speak</span>
+                    <span className="h-6"></span>
+                  </div>
+                  <div className="flex flex-col justify-between py-1">
+                    <span className="font-semibold text-[9px]">Write</span>
+                    <span className="h-6"></span>
+                  </div>
+                </div>
+              </div>
+              <div className="border-r border-slate-800 flex flex-col justify-between py-1 bg-slate-50">
+                <span className="font-bold uppercase text-[9px]">Total</span>
+                <span className="h-6"></span>
+              </div>
+              <div className="flex flex-col p-1 text-[9px] text-left leading-tight text-slate-500 font-serif">
+                <span className="font-semibold">Remark:</span>
+                <span className="border-b border-dashed border-slate-300 w-full mt-1.5"></span>
+                <span className="border-b border-dashed border-slate-300 w-full mt-1.5"></span>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 text-center bg-slate-50 flex flex-col items-center justify-center">
+              <p className="font-bold uppercase text-[11px] text-slate-700">Điểm Số / Lời Phê</p>
+              <div className="h-10 border-b border-dashed border-slate-300 w-full mt-1"></div>
+            </div>
+          )}
         </div>
 
         {/* Exam Sections */}
@@ -188,15 +232,62 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
                   {section.questions.map((q, qIdx) => {
-                    const currentQNum = globalQIdx++;
+                    const isEssay = q.type === 'ESSAY';
+                    const currentQNum = isEssay ? null : globalQIdx++;
                     return (
                       <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">
                         <p className="leading-snug">
-                          <span className="font-bold text-slate-900">{currentQNum}. </span>
-                          <span>{q.prompt}</span>
-                          <span className="text-[11px] text-slate-500 font-sans italic ml-1">
-                            [{q.points}đ - {q.cognitionLevel}]
-                          </span>
+                          {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
+                          {(() => {
+                            if (q.type === 'ESSAY') {
+                              const lines = q.prompt.split('\n');
+                              const firstLine = lines[0];
+                              const match = firstLine.match(/(\([\d\-\s\.]+\s*words\))/i);
+
+                              let firstLineEl;
+                              if (match && match.index !== undefined) {
+                                const before = firstLine.substring(0, match.index);
+                                const wordCount = match[1];
+                                const after = firstLine.substring(match.index + wordCount.length);
+                                firstLineEl = (
+                                  <span className="font-bold">
+                                    {before}
+                                    <span className="text-red-600 font-bold">{wordCount}</span>
+                                    {after}
+                                  </span>
+                                );
+                              } else {
+                                firstLineEl = <span className="font-bold">{firstLine}</span>;
+                              }
+
+                              return (
+                                <>
+                                  {firstLineEl}
+                                  {showCognition && (
+                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                                      [{q.points}đ - {q.cognitionLevel}]
+                                    </span>
+                                  )}
+                                  {lines.slice(1).map((l, idx) => (
+                                    <div key={idx} className="mt-1 text-slate-700 font-sans whitespace-pre-wrap pl-2">
+                                      {l}
+                                    </div>
+                                  ))}
+                                </>
+                              );
+                            } else {
+                              return (
+                                <>
+                                  <span>{q.prompt}</span>
+                                  {showCognition && (
+                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                                      [{q.points}đ - {q.cognitionLevel}]
+                                    </span>
+                                  )}
+                                </>
+                              );
+                            }
+                          })()}
                         </p>
 
                         {/* MCQ Options */}
@@ -221,9 +312,9 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                         {/* Essay prompt space */}
                         {q.type === 'ESSAY' && (
                           <div className="mt-2 pl-4 text-slate-400 font-mono text-xs space-y-1">
-                            <p>..........................................................................................................................................................................</p>
-                            <p>..........................................................................................................................................................................</p>
-                            <p>..........................................................................................................................................................................</p>
+                            {Array(8).fill(null).map((_, i) => (
+                              <p key={i}>..........................................................................................................................................................................</p>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -264,7 +355,6 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         {/* Footer note */}
         <div className="text-center mt-8 pt-4 border-t border-slate-300 text-xs font-bold font-sans text-slate-600">
           <p>-------------- HẾT --------------</p>
-          <p className="text-[11px] font-normal italic mt-0.5">(Cán bộ coi thi không giải thích gì thêm)</p>
         </div>
       </div>
     </div>

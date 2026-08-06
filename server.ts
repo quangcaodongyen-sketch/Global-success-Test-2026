@@ -139,12 +139,17 @@ Nhiệm vụ của bạn là sinh BỘ ĐỀ KIỂM TRA CHUẨN ĐẦY ĐỦ g�
 1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề thi (${isFinalTerm ? '8.0' : '10.0'} điểm).
 2. Bảng Bản đặc tả đề kiểm tra (Specifications) chi tiết chuẩn Bộ GDĐT.
 3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới.
-4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu.
+4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng (câu 36 của Cuối kỳ, câu 37 của Giữa kỳ), bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng 80-100 từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
 5. Luôn sinh ra 3 chủ đề nói (speakingTopics) bám sát các Unit học sinh đã học, mỗi chủ đề gồm: tên chủ đề (topicName), mô tả tình huống bằng tiếng Anh (description), 3 câu hỏi gợi ý bằng tiếng Anh (guideQuestions) và 3 câu trả lời mẫu gợi ý tương ứng (suggestedAnswers).
 
-YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG ĐÁP ÁN TRẮC NGHIỆM:
+YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC NGHIỆM:
 - Tất cả các câu hỏi trắc nghiệm trong đề thi chỉ được phép có từ 2 đến 3 đáp án lựa chọn (True/False là 2 đáp án A/B; các câu MCQ khác là 3 đáp án A/B/C).
 - TUYỆT ĐỐI KHÔNG ĐƯỢC có đáp án thứ 4 (không có đáp án D).
+- Đối với câu hỏi Đúng/Sai (True/False), hai lựa chọn đáp án bắt buộc phải để dưới dạng viết tắt:
+  + Lựa chọn A: "T" (ví dụ: {"key": "A", "text": "T"})
+  + Lựa chọn B: "F" (ví dụ: {"key": "B", "text": "F"})
+  (Tức là không viết nguyên chữ "True"/"False" hay "Đúng"/"Sai" ở phần text của options).
+
 
 Yêu cầu cấu trúc và biểu điểm bắt buộc:
 ${examStructureRules}
