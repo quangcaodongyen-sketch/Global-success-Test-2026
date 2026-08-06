@@ -1,0 +1,6 @@
+{
+  "name": "Công Cụ Sinh Đề Kiểm Tra Tiếng Anh THCS Global Success",
+  "description": "Ứng dụng tự động sinh Ma trận, Bản đặc tả, Đề thi nhiều mã đề và Đáp án Tiếng Anh THCS bám sát chương trình Global Success và Nghị định 30/2020/NĐ-CP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
