@@ -110,7 +110,7 @@ async function buildFallbackMatrixExcel(matrix: MatrixItem[], schoolName: string
     [`STT`, `Kỹ Năng / Mạch Kiến Thức`, `Dạng Bài / Dạng Câu Hỏi`, `Mức Độ Nhận Thức`, `Số Câu`, `Tổng Điểm`]
   ];
   (Array.isArray(matrix) ? matrix : []).forEach((item, idx) => {
-    data.push([String(idx + 1), item.skill, item.subSkill, item.cognitionLevel, String(item.questionCount), `${item.points.toFixed(1)}đ`]);
+    data.push([String(idx + 1), item.skill, item.subSkill, item.cognitionLevel, String(item.questionCount), `${(item?.points || 0).toFixed(1)}đ`]);
   });
   return await buildXlsxFile(data);
 }
@@ -124,7 +124,7 @@ async function buildFallbackSpecExcel(specifications: SpecificationItem[], schoo
     [`Kỹ năng`, `Chủ đề / Đơn vị kiến thức`, `Yêu cầu cần đạt`, `Nhận biết`, `Thông hiểu`, `Vận dụng`, `Vận dụng cao`, `Tổng cộng`]
   ];
   (Array.isArray(specifications) ? specifications : []).forEach((item) => {
-    data.push([item.skill, item.knowledgeUnit, item.performanceIndicator, item.recognitionCount > 0 ? `${item.recognitionCount} câu` : '-', item.comprehensionCount > 0 ? `${item.comprehensionCount} câu` : '-', item.applicationCount > 0 ? `${item.applicationCount} câu` : '-', item.highApplicationCount > 0 ? `${item.highApplicationCount} câu` : '-', `${item.totalQuestions} câu (${item.totalPoints.toFixed(1)}đ)`]);
+    data.push([item.skill, item.knowledgeUnit, item.performanceIndicator, item.recognitionCount > 0 ? `${item.recognitionCount} câu` : '-', item.comprehensionCount > 0 ? `${item.comprehensionCount} câu` : '-', item.applicationCount > 0 ? `${item.applicationCount} câu` : '-', item.highApplicationCount > 0 ? `${item.highApplicationCount} câu` : '-', `${item.totalQuestions} câu (${(item?.totalPoints || 0).toFixed(1)}đ)`]);
   });
   return await buildXlsxFile(data);
 }

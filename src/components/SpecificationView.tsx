@@ -88,7 +88,7 @@ export const SpecificationView: React.FC<SpecificationViewProps> = ({
                 </td>
                 <td className="p-2.5 text-center font-bold text-indigo-900 bg-indigo-50/40 align-top">
                   {item.totalQuestions} câu <br />
-                  <span className="text-[11px] text-indigo-700">({item.totalPoints.toFixed(1)}đ)</span>
+                  <span className="text-[11px] text-indigo-700">({(item?.totalPoints || 0).toFixed(1)}đ)</span>
                 </td>
               </tr>
             ))}

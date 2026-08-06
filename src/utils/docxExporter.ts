@@ -1200,7 +1200,7 @@ function createMatrixTable(matrix: MatrixItem[]): Table {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: `${item.points.toFixed(1)}đ`,
+                  text: `${(item?.points || 0).toFixed(1)}đ`,
                   bold: true,
                   size: 24,
                   font: FONT_FAMILY,
@@ -1351,7 +1351,7 @@ function createSpecTable(specs: SpecificationItem[]): Table {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: `${item.totalQuestions} câu\n(${item.totalPoints.toFixed(1)}đ)`,
+                  text: `${item.totalQuestions} câu\n(${(item?.totalPoints || 0).toFixed(1)}đ)`,
                   bold: true,
                   size: 22,
                   font: FONT_FAMILY,
@@ -1474,7 +1474,7 @@ function createAnswerKeyTable(paper: ExamPaper): Table {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: `${item.points.toFixed(2)}đ`,
+                  text: `${(item?.points || 0).toFixed(2)}đ`,
                   size: 24,
                   font: FONT_FAMILY,
                 }),

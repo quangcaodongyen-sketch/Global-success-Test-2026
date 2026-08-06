@@ -272,7 +272,7 @@ export default function App() {
                 onExportZip={handleExportZip}
                 isGenerating={isGenerating}
                 hasGeneratedSuite={!!suite}
-                variantCount={suite?.papers.length || 0}
+                variantCount={Array.isArray(suite?.papers) ? suite.papers.length : 0}
               />
             </div>
 
@@ -292,7 +292,7 @@ export default function App() {
                       }`}
                     >
                       <FileText className="w-4 h-4" />
-                      <span>1. Đề Thi ({suite.papers.length} mã)</span>
+                      <span>1. Đề Thi ({Array.isArray(suite.papers) ? suite.papers.length : 0} mã)</span>
                     </button>
 
                     <button

@@ -106,7 +106,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ matrix, summary, onDownl
                   </span>
                 </td>
                 <td className="p-3 border-r border-slate-200 text-center font-bold">{item.questionCount}</td>
-                <td className="p-3 text-center font-bold text-indigo-700">{item.points.toFixed(1)}đ</td>
+                <td className="p-3 text-center font-bold text-indigo-700">{(item?.points || 0).toFixed(1)}đ</td>
               </tr>
             ))}
           </tbody>
@@ -116,10 +116,10 @@ export const MatrixView: React.FC<MatrixViewProps> = ({ matrix, summary, onDownl
                 TỔNG CỘNG TOÀN BỘ BÀI KIỂM TRA:
               </td>
               <td className="p-3 border-r border-indigo-200 text-center text-indigo-900 text-sm">
-                {summary.totalQuestions} câu
+                {summary?.totalQuestions || 0} câu
               </td>
               <td className="p-3 text-center text-indigo-900 text-sm">
-                {summary.totalPoints.toFixed(1)} điểm (100%)
+                {(summary?.totalPoints || 0).toFixed(1)} điểm (100%)
               </td>
             </tr>
           </tfoot>

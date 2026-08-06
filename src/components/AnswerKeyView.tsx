@@ -78,7 +78,7 @@ export const AnswerKeyView: React.FC<AnswerKeyViewProps> = ({ paper, onDownloadD
                     {item.answer}
                   </td>
                   <td className="p-2.5 border-r border-slate-200 text-center font-bold text-indigo-800">
-                    {item.points.toFixed(2)}đ
+                    {(item?.points || 0).toFixed(2)}đ
                   </td>
                   <td className="p-2.5 text-slate-700 italic leading-relaxed">
                     {item.explanation}
