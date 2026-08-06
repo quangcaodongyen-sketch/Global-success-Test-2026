@@ -121,8 +121,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
   let globalQuestionIndex = 1;
   const safeSections = Array.isArray(paper.sections) ? paper.sections : [];
   const validSections = safeSections.filter(s => {
-    // Prevent AI-generated empty sections (like headers)
-    if (!s.questions || s.questions.length === 0) {
+    // Prevent AI-generated title header section
+    if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
       return false;
     }
     return true;
@@ -191,78 +191,80 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
     // Questions
     (Array.isArray(section.questions) ? section.questions : []).forEach((q) => {
-      const isEssaySection = (section.title || '').toLowerCase().includes('write a paragraph') || (section.instructions || '').toLowerCase().includes('write a paragraph');
-      const isEssay = isEssaySection || (q.type || '').toUpperCase() === 'ESSAY' || (q.type || '').toUpperCase() === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
-      
+      const isEssay = q.type === 'ESSAY';
+      const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
+
       if (isEssay) {
-        let promptLines = (q.prompt || '').split(/(?:\n|(?=- )|(?= - ))/).map(l => l.trim()).filter(l => l.length > 0);
-        
-        // Strip duplicate instructions if AI still generated them in prompt
-        if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('write a paragraph')) {
-          promptLines.shift();
-        }
-        if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('following suggestions')) {
-          promptLines.shift();
+        const promptLines = (q.prompt || '').split('\n');
+        const firstLine = promptLines[0];
+        const wordCountRegex = /(\([\d\-\s\.]+\s*words\))/i;
+        const match = firstLine.match(wordCountRegex);
+
+        const childrenRuns: TextRun[] = [];
+
+        if (match && match.index !== undefined) {
+          const before = firstLine.substring(0, match.index);
+          const wordCount = match[1];
+          const after = firstLine.substring(match.index + wordCount.length);
+
+          childrenRuns.push(
+            new TextRun({ text: before, bold: true, size: 28, font: FONT_FAMILY }),
+            new TextRun({ text: wordCount, bold: true, color: 'FF0000', size: 28, font: FONT_FAMILY }), // RED
+            new TextRun({ text: after, bold: true, size: 28, font: FONT_FAMILY })
+          );
+        } else {
+          // If the first line doesn't have word count, it's probably just a suggestion (e.g. "- Where is it?")
+          // so we don't need to make it bold like a title.
+          childrenRuns.push(
+            new TextRun({ text: firstLine, size: 26, font: FONT_FAMILY })
+          );
         }
 
-        if (promptLines.length > 0) {
-          promptLines.forEach((line, idx) => {
-            let text = line;
-            if (!text.startsWith('-') && promptLines.length > 1) {
-               text = `- ${text}`;
-            }
+        if (showCognition) {
+          childrenRuns.push(
+            new TextRun({
+              text: ` [${q.points}đ - ${q.cognitionLevel}]`,
+              italics: true,
+              size: 22, // 11pt
+              font: FONT_FAMILY,
+            })
+          );
+        }
 
+        children.push(
+          new Paragraph({
+            spacing: { before: 120, after: 60 },
+            children: childrenRuns,
+          })
+        );
+
+        if (promptLines.length > 1) {
+          for (let i = 1; i < promptLines.length; i++) {
             children.push(
               new Paragraph({
                 spacing: { before: 60, after: 60 },
-                indent: { left: 720 }, // Indent bullet points
                 children: [
                   new TextRun({
-                    text: text,
+                    text: promptLines[i],
                     size: 26,
                     font: FONT_FAMILY,
-                    italics: true,
                   }),
-                  ...(idx === promptLines.length - 1 && showCognition ? [
-                    new TextRun({
-                      text: ` [${q.points}đ - ${q.cognitionLevel}]`,
-                      italics: true,
-                      size: 22, // 11pt
-                      font: FONT_FAMILY,
-                    })
-                  ] : [])
                 ],
               })
             );
-          });
-        } else if (showCognition) {
-          // If no prompt lines left, still show cognition
-          children.push(
-            new Paragraph({
-              spacing: { before: 60, after: 60 },
-              children: [
-                new TextRun({
-                  text: `[${q.points}đ - ${q.cognitionLevel}]`,
-                  italics: true,
-                  size: 22,
-                  font: FONT_FAMILY,
-                })
-              ],
-            })
-          );
+          }
         }
 
         // Add 8 dotted lines for student's writing area
         for (let i = 0; i < 8; i++) {
           children.push(
             new Paragraph({
-              spacing: { before: 200, after: 200 },
+              spacing: { before: 120, after: 120 },
               children: [
                 new TextRun({
-                  text: '.........................................................................................................................................................',
+                  text: '.......................................................................................................................................',
                   size: 26,
                   font: FONT_FAMILY,
-                  color: '999999',
                 }),
               ],
             })

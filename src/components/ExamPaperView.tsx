@@ -221,7 +221,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
             let globalQIdx = 1;
             const safeSections = Array.isArray(currentPaper.sections) ? currentPaper.sections : [];
             const validSections = safeSections.filter(s => {
-              if (!s.questions || s.questions.length === 0) {
+              if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
                 return false;
               }
               return true;
@@ -247,43 +247,27 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                 {/* Questions */}
                 <div className="space-y-3 pl-1">
                   {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
-                    const isEssaySection = (section.title || '').toLowerCase().includes('write a paragraph') || (section.instructions || '').toLowerCase().includes('write a paragraph');
-                    const isEssay = isEssaySection || (q.type || '').toUpperCase() === 'ESSAY' || (q.type || '').toUpperCase() === 'WRITING' || (q.prompt && q.prompt.toLowerCase().includes('write a paragraph'));
+                    const isEssay = q.type === 'ESSAY';
                     const currentQNum = isEssay ? null : globalQIdx++;
                     return (
                       <div key={q.id || qIdx} className="text-xs sm:text-sm text-slate-900">
                         <p className="leading-snug">
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
-                            if (isEssay) {
-                              let promptLines = (q.prompt || '').split(/(?:\n|(?=- )|(?= - ))/).map(l => l.trim()).filter(l => l.length > 0);
-                              
-                              if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('write a paragraph')) {
-                                promptLines.shift();
-                              }
-                              if (promptLines.length > 0 && promptLines[0].toLowerCase().includes('following suggestions')) {
-                                promptLines.shift();
-                              }
-
+                            if (q.type === 'ESSAY') {
                               return (
-                                <div className="ml-4 space-y-1 mt-1">
-                                  {promptLines.map((pt, i) => {
-                                    let text = pt;
-                                    if (!text.startsWith('-') && promptLines.length > 1) {
-                                      text = `- ${text}`;
-                                    }
-                                    return (
-                                      <span key={i} className="block italic text-slate-700">
-                                        {text}
-                                      </span>
-                                    );
-                                  })}
+                                <>
+                                  {(q.prompt || '').split('\n').map((pt, idx) => (
+                                    <span key={idx} className={idx === 0 && pt.match(/\(\d+-\d+\swords\)/) ? 'font-bold block' : 'block'}>
+                                      {pt}
+                                    </span>
+                                  ))}
                                   {showCognition && (
-                                    <span className="block text-[11px] text-slate-500 font-sans italic mt-1">
+                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
                                       [{q.points}đ - {q.cognitionLevel}]
                                     </span>
                                   )}
-                                </div>
+                                </>
                               );
                             }
                             return (
@@ -319,7 +303,7 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                         )}
 
                         {/* Essay prompt space */}
-                        {isEssay && (
+                        {q.type === 'ESSAY' && (
                           <div className="mt-2 pl-4 text-slate-400 font-mono text-xs space-y-1">
                             {Array(8).fill(null).map((_, i) => (
                               <p key={i}>..........................................................................................................................................................................</p>
