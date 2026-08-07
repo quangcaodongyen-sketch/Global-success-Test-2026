@@ -100,16 +100,68 @@ export async function generateMatrixAndSpecDocx(suite: FullExamSuite, paper: Exa
 }
 
 /**
+ * Utility to strip out redundant administrative header lines (e.g. TRƯỜNG THCS..., ĐỀ KIỂM TRA...)
+ * that Gemini AI or uploaded Word templates mistakenly put inside section titles, instructions, or passages.
+ */
+export function cleanHeaderLines(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n');
+  const filtered = lines.filter((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    const upper = trimmed.toUpperCase();
+
+    // Preserve actual Part or Section headers like "Part 1. Listen..." or "SECTION A: LISTENING"
+    const isPartHeader = /^(part|section|phần|bài)\s*(\d+|[a-z])[\.\:\s]/i.test(trimmed);
+    if (isPartHeader) {
+      return true;
+    }
+
+    // Identify header keyword patterns
+    const isHeaderLine =
+      upper.startsWith('UBND') ||
+      upper.startsWith('SỞ GIÁO DỤC') ||
+      upper.startsWith('PHÒNG GIÁO DỤC') ||
+      upper.startsWith('TRƯỜNG THCS') ||
+      upper.startsWith('TRƯỜNG THPT') ||
+      upper.includes('BÀI KIỂM TRA') ||
+      upper.includes('ĐỀ KIỂM TRA') ||
+      upper.includes('GIỮA KỲ') ||
+      upper.includes('CUỐI KỲ') ||
+      upper.includes('KIỂM TRA 15') ||
+      upper.includes('NĂM HỌC:') ||
+      upper.includes('MÔN: TIẾNG ANH') ||
+      upper.includes('GLOBAL SUCCESS') ||
+      upper.includes('THỜI GIAN LÀM BÀI') ||
+      upper.includes('KHÔNG KỂ THỜI GIAN') ||
+      upper.includes('MÃ ĐỀ:') ||
+      upper.includes('HỌ VÀ TÊN') ||
+      upper.includes('FULL NAME:') ||
+      upper.includes('CLASS:');
+
+    if (isHeaderLine) {
+      return false;
+    }
+    return true;
+  });
+
+  return filtered.join('\n').trim();
+}
+
+/**
  * Creates Detap_MaDe[Code].docx
  */
 export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boolean = true): Promise<Blob> {
-  const admin = paper.adminInfo;
+  const admin = paper.adminInfo || {};
 
   const children: (Paragraph | Table)[] = [
     // Header block
-    createExamHeaderTable(admin.schoolName, paper.examType, paper.grade, admin.academicYear, paper.code, admin.durationMinutes),
+    createExamHeaderTable(admin.schoolName || paper.schoolName || 'TRƯỜNG THCS', paper.examType, paper.grade, admin.academicYear, paper.code, admin.durationMinutes),
 
     new Paragraph({ spacing: { after: 150 } }),
+
+    // Student Info & Score Box
+    createStudentInfoTable(paper.examType),
 
     new Paragraph({ spacing: { after: 250 } }),
   ];
@@ -117,43 +169,44 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
   // Render Sections
   let globalQuestionIndex = 1;
   const safeSections = Array.isArray(paper.sections) ? paper.sections : [];
-  const validSections = safeSections.filter(s => {
-    // Prevent AI-generated empty title header section or redundant headers
-    if (!s.questions || s.questions.length === 0) return false;
-    const titleUpper = (s.title || '').toUpperCase();
-    if (
-      titleUpper.includes('ĐỀ KIỂM TRA') ||
-      titleUpper.includes('BÀI KIỂM TRA') ||
-      titleUpper.includes('THỜI GIAN LÀM BÀI') ||
-      titleUpper.includes('TRƯỜNG THCS')
-    ) {
-      return false;
+
+  safeSections.forEach((section, sIdx) => {
+    const rawQuestions = Array.isArray(section.questions) ? section.questions : [];
+    const cleanTitle = cleanHeaderLines(section.title || '');
+    const cleanInstructions = cleanHeaderLines(section.instructions || '');
+    const cleanPassage = cleanHeaderLines(section.readingPassage || '');
+
+    // Completely skip empty section or header-only section without questions
+    if (rawQuestions.length === 0 && !cleanTitle && !cleanInstructions) {
+      return;
     }
-    return true;
-  });
 
-  validSections.forEach((section) => {
-    children.push(
-      new Paragraph({
-        spacing: { before: 200, after: 100 },
-        children: [
-          new TextRun({
-            text: section.title,
-            bold: true,
-            size: 28, // 14pt
-            font: FONT_FAMILY,
-          }),
-        ],
-      })
-    );
+    // Determine displayed section title
+    const displayTitle = cleanTitle || (rawQuestions.length > 0 ? `PART ${sIdx + 1}` : '');
 
-    if (section.instructions) {
+    if (displayTitle) {
+      children.push(
+        new Paragraph({
+          spacing: { before: 200, after: 100 },
+          children: [
+            new TextRun({
+              text: displayTitle,
+              bold: true,
+              size: 28, // 14pt
+              font: FONT_FAMILY,
+            }),
+          ],
+        })
+      );
+    }
+
+    if (cleanInstructions) {
       children.push(
         new Paragraph({
           spacing: { after: 150 },
           children: [
             new TextRun({
-              text: section.instructions,
+              text: cleanInstructions,
               italics: true,
               size: 26, // 13pt
               font: FONT_FAMILY,
@@ -163,7 +216,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       );
     }
 
-    if (section.readingPassage) {
+    if (cleanPassage) {
       children.push(
         new Table({
           width: { size: 100, type: WidthType.PERCENTAGE },
@@ -175,7 +228,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
                     new Paragraph({
                       children: [
                         new TextRun({
-                          text: section.readingPassage,
+                          text: cleanPassage,
                           size: 26,
                           font: FONT_FAMILY,
                         }),
@@ -194,78 +247,72 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
     }
 
     // Questions
-    (Array.isArray(section.questions) ? section.questions : []).forEach((q) => {
+    rawQuestions.forEach((q) => {
       const isEssay = q.type === 'ESSAY';
       const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
+      const cleanedPromptRaw = cleanHeaderLines(q.prompt || '');
 
       if (isEssay) {
-        // Strip question numbers like "37. ", "Question 37:", or duplicate instruction headers from essay prompt
+        // Strip question numbers like "37. ", "Question 37:", or duplicate title sentences
         let cleanedPrompt = (q.prompt || '')
           .replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '')
           .trim();
 
-        // If prompt repeats section instructions, strip that line
-        if (section.instructions && cleanedPrompt.toLowerCase().startsWith(section.instructions.toLowerCase().slice(0, 20))) {
-          cleanedPrompt = cleanedPrompt.substring(section.instructions.length).trim();
+        // Extract topic name if present (e.g. "about your favorite hobby")
+        let topicName = '';
+        const topicMatch = cleanedPrompt.match(/about\s+([^.\n]+)/i);
+        if (topicMatch) {
+          topicName = topicMatch[1].trim();
         }
 
-        const promptLines = (cleanedPrompt || q.prompt || '').split('\n');
-        const firstLine = promptLines[0] || '';
-        const wordCountRegex = /(\([\d\-\s\.]+\s*words\))/i;
-        const match = firstLine.match(wordCountRegex);
-
-        const childrenRuns: TextRun[] = [];
-
-        if (match && match.index !== undefined) {
-          const before = firstLine.substring(0, match.index);
-          const wordCount = match[1];
-          const after = firstLine.substring(match.index + wordCount.length);
-
-          childrenRuns.push(
-            new TextRun({ text: before, bold: true, size: 28, font: FONT_FAMILY }),
-            new TextRun({ text: wordCount, bold: true, color: 'FF0000', size: 28, font: FONT_FAMILY }), // RED
-            new TextRun({ text: after, bold: true, size: 28, font: FONT_FAMILY })
-          );
-        } else {
-          childrenRuns.push(
-            new TextRun({ text: firstLine, size: 26, font: FONT_FAMILY })
-          );
+        // If section.title contains "a given topic", replace it with the specific topic name
+        if (topicName && section.title && section.title.toLowerCase().includes('a given topic')) {
+          const updatedTitle = section.title.replace(/a given topic/i, topicName);
+          // Update the last paragraph in children (which was displayTitle) if possible, or print clean guide lines
         }
 
-        if (showCognition) {
-          childrenRuns.push(
-            new TextRun({
-              text: ` [${q.points}đ - ${q.cognitionLevel}]`,
-              italics: true,
-              size: 22, // 11pt
-              font: FONT_FAMILY,
+        // Split guide lines (e.g., "You should include:", "What your hobby is.", etc.)
+        const promptLines = cleanedPrompt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+        // Filter out line if it just repeats "Write a paragraph..." title
+        const guideLines = promptLines.filter(line => {
+          const lower = line.toLowerCase();
+          return !lower.startsWith('write a paragraph') && !lower.startsWith('write a short paragraph');
+        });
+
+        // Render guide lines indented & italicized
+        guideLines.forEach((gLine) => {
+          children.push(
+            new Paragraph({
+              spacing: { before: 40, after: 40 },
+              indent: { left: 400 },
+              children: [
+                new TextRun({
+                  text: gLine,
+                  italics: true,
+                  size: 26, // 13pt
+                  font: FONT_FAMILY,
+                }),
+              ],
             })
           );
-        }
+        });
 
-        children.push(
-          new Paragraph({
-            spacing: { before: 120, after: 60 },
-            children: childrenRuns,
-          })
-        );
-
-        if (promptLines.length > 1) {
-          for (let i = 1; i < promptLines.length; i++) {
-            if (!promptLines[i].trim()) continue;
-            children.push(
-              new Paragraph({
-                spacing: { before: 60, after: 60 },
-                children: [
-                  new TextRun({
-                    text: promptLines[i],
-                    size: 26,
-                    font: FONT_FAMILY,
-                  }),
-                ],
-              })
-            );
-          }
+        if (showCognition) {
+          children.push(
+            new Paragraph({
+              indent: { left: 400 },
+              spacing: { after: 100 },
+              children: [
+                new TextRun({
+                  text: `[${q.points}đ - ${q.cognitionLevel}]`,
+                  italics: true,
+                  size: 22, // 11pt
+                  font: FONT_FAMILY,
+                }),
+              ],
+            })
+          );
         }
       } else {
         children.push(
@@ -339,8 +386,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
           );
         }
       } else if (q.type === 'ESSAY' && (!q.options || q.options.length === 0)) {
-        // Render 4 clean dotted lines for essay writing area (instead of 16 lines)
-        for (let i = 0; i < 4; i++) {
+        // Render 8 clean dotted lines for essay writing area
+        for (let i = 0; i < 8; i++) {
           children.push(
             new Paragraph({
               spacing: { before: 100, after: 100 },
@@ -432,8 +479,8 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       spacing: { before: 300, after: 200 },
       children: [
         new TextRun({
-          text: `-------------- HẾT --------------`,
-          bold: true,
+          text: `-------- The end --------`,
+          bold: false,
           italics: true,
           size: 24,
           font: FONT_FAMILY,

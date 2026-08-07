@@ -14,6 +14,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { generateExamAudioBlobs, GeneratedExamAudioResult } from '../utils/audioGenerator';
+import { cleanHeaderLines } from '../utils/docxExporter';
 
 interface ExamPaperViewProps {
   papers: ExamPaper[];
@@ -116,13 +117,13 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
     let filename: string;
     if (key === 'part1') {
       blob = res.part1Blob;
-      filename = `04_FileNghe_Part1_Monologue_MaDe${currentPaper.code}.wav`;
+      filename = `04_FileNghe_Part1_Monologue_MaDe${currentPaper.code}.mp3`;
     } else if (key === 'part2') {
       blob = res.part2Blob;
-      filename = `04_FileNghe_Part2_Dialogue_MaDe${currentPaper.code}.wav`;
+      filename = `04_FileNghe_Part2_Dialogue_MaDe${currentPaper.code}.mp3`;
     } else {
       blob = res.fullExamBlob;
-      filename = `04_FileNghe_FullExam_MaDe${currentPaper.code}.wav`;
+      filename = `04_FileNghe_FullExam_MaDe${currentPaper.code}.mp3`;
     }
 
     const a = document.createElement('a');
@@ -288,10 +289,10 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
               onClick={() => handleDownloadAudioFile('full')}
               disabled={isGeneratingAudio}
               className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg flex items-center gap-1 transition cursor-pointer border border-slate-600 text-[11px]"
-              title="Tải riêng file âm thanh WAV chất lượng cao"
+              title="Tải riêng file âm thanh MP3 chất lượng cao"
             >
               <Download className="w-3.5 h-3.5 text-amber-400" />
-              <span>Tải WAV Bài Nghe</span>
+              <span>Tải MP3 Bài Nghe</span>
             </button>
           </div>
 
@@ -374,39 +375,41 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
           {(() => {
             let globalQIdx = 1;
             const safeSections = Array.isArray(currentPaper.sections) ? currentPaper.sections : [];
-            const validSections = safeSections.filter(s => {
-              if (!s.questions || s.questions.length === 0) return false;
-              const titleUpper = (s.title || '').toUpperCase();
-              if (
-                titleUpper.includes('ĐỀ KIỂM TRA') ||
-                titleUpper.includes('BÀI KIỂM TRA') ||
-                titleUpper.includes('THỜI GIAN LÀM BÀI') ||
-                titleUpper.includes('TRƯỜNG THCS')
-              ) {
-                return false;
+
+            return safeSections.map((section, sIdx) => {
+              const rawQuestions = Array.isArray(section.questions) ? section.questions : [];
+              const cleanTitle = cleanHeaderLines(section.title || '');
+              const cleanInstructions = cleanHeaderLines(section.instructions || '');
+              const cleanPassage = cleanHeaderLines(section.readingPassage || '');
+
+              if (rawQuestions.length === 0 && !cleanTitle && !cleanInstructions) {
+                return null;
               }
-              return true;
-            });
-            return validSections.map((section, sIdx) => (
-              <div key={sIdx} className="space-y-3">
-                <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
-                  {section.title}
-                </h3>
 
-                {section.instructions && (
-                  <p className="italic text-xs text-slate-700 font-sans font-medium bg-indigo-50/60 p-2 rounded border border-indigo-100">
-                    {section.instructions}
-                  </p>
-                )}
+              const displayTitle = cleanTitle || (rawQuestions.length > 0 ? `PART ${sIdx + 1}` : '');
 
-                {section.readingPassage && (
-                  <div className="bg-amber-50/50 p-3.5 rounded-lg border border-amber-200/80 text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line font-sans my-2">
-                    {section.readingPassage}
-                  </div>
-                )}
+              return (
+                <div key={sIdx} className="space-y-3">
+                  {displayTitle && (
+                    <h3 className="font-bold text-sm sm:text-base text-slate-900 uppercase tracking-wide border-b border-slate-300 pb-1">
+                      {displayTitle}
+                    </h3>
+                  )}
 
-                {/* Questions */}
-                <div className="space-y-3 pl-1">
+                  {cleanInstructions && (
+                    <p className="italic text-xs text-slate-700 font-sans font-medium bg-indigo-50/60 p-2 rounded border border-indigo-100">
+                      {cleanInstructions}
+                    </p>
+                  )}
+
+                  {cleanPassage && (
+                    <div className="bg-amber-50/50 p-3.5 rounded-lg border border-amber-200/80 text-xs sm:text-sm leading-relaxed text-slate-800 whitespace-pre-line font-sans my-2">
+                      {cleanPassage}
+                    </div>
+                  )}
+
+                  {/* Questions */}
+                  <div className="space-y-3 pl-1">
                   {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
                     const isEssay = q.type === 'ESSAY';
                     const currentQNum = isEssay ? null : globalQIdx++;
@@ -427,15 +430,23 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
                             if (q.type === 'ESSAY') {
+                              const promptLines = (cleanedPrompt || q.prompt || '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                              const guideLines = promptLines.filter(line => {
+                                const lower = line.toLowerCase();
+                                return !lower.startsWith('write a paragraph') && !lower.startsWith('write a short paragraph');
+                              });
+
                               return (
                                 <>
-                                  {(cleanedPrompt || q.prompt || '').split('\n').map((pt, idx) => (
-                                    <span key={idx} className={idx === 0 && pt.match(/\(\d+-\d+\swords\)/) ? 'font-bold block' : 'block'}>
-                                      {pt}
-                                    </span>
-                                  ))}
+                                  <div className="pl-6 space-y-1 my-1">
+                                    {guideLines.map((pt, idx) => (
+                                      <p key={idx} className="italic text-slate-700 font-serif">
+                                        {pt}
+                                      </p>
+                                    ))}
+                                  </div>
                                   {showCognition && (
-                                    <span className="text-[11px] text-slate-500 font-sans italic ml-1">
+                                    <span className="text-[11px] text-slate-500 font-sans italic pl-6 block">
                                       [{q.points}đ - {q.cognitionLevel}]
                                     </span>
                                   )}
@@ -474,10 +485,10 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                           </div>
                         )}
 
-                        {/* Essay prompt space (4 clean lines) */}
+                        {/* Essay prompt space (8 clean lines) */}
                         {q.type === 'ESSAY' && (!q.options || q.options.length === 0) && (
                           <div className="mt-2 pl-4 text-slate-300 font-mono text-xs space-y-1">
-                            {Array(4).fill(null).map((_, i) => (
+                            {Array(8).fill(null).map((_, i) => (
                               <p key={i}>..........................................................................................................................................................................</p>
                             ))}
                           </div>
@@ -487,8 +498,9 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                   })}
                 </div>
               </div>
-            ));
-          })()}
+            );
+          });
+        })()}
         </div>
 
         {/* Speaking Section if present */}
@@ -518,8 +530,8 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
         )}
 
         {/* Footer note */}
-        <div className="text-center mt-8 pt-4 border-t border-slate-300 text-xs font-bold font-sans text-slate-600">
-          <p>-------------- HẾT --------------</p>
+        <div className="text-center mt-8 pt-4 border-t border-slate-300 text-xs font-serif text-slate-700">
+          <p className="italic font-serif text-slate-700 text-sm">-------- The end --------</p>
         </div>
       </div>
     </div>

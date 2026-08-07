@@ -64,14 +64,14 @@ export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: bo
     rootFolder.file(`03_DapAn_HuongDanCham_MaDe${paper.code}.docx`, answerKeyBlob);
   }
 
-  // 4. Audio files (Part 1 monologue, Part 2 dialogue, Full exam audio)
+  // 4. Audio files (Part 1 monologue, Part 2 dialogue, Full exam audio MP3)
   try {
     const audioResult = await generateExamAudioBlobs(primaryPaper);
-    rootFolder.file(`04_FileNghe_FullExam_MaDe${primaryPaper.code}.wav`, audioResult.fullExamBlob);
-    rootFolder.file(`04_FileNghe_Part1_Monologue_MaDe${primaryPaper.code}.wav`, audioResult.part1Blob);
-    rootFolder.file(`04_FileNghe_Part2_Dialogue_MaDe${primaryPaper.code}.wav`, audioResult.part2Blob);
+    rootFolder.file(`04_FileNghe_FullExam_MaDe${primaryPaper.code}.mp3`, audioResult.fullExamBlob);
+    rootFolder.file(`04_FileNghe_Part1_Monologue_MaDe${primaryPaper.code}.mp3`, audioResult.part1Blob);
+    rootFolder.file(`04_FileNghe_Part2_Dialogue_MaDe${primaryPaper.code}.mp3`, audioResult.part2Blob);
   } catch (audioErr) {
-    console.warn('[zipExporter] Lỗi khi tạo file nghe audio cho file zip:', audioErr);
+    console.error('[zipExporter] Lỗi khi tạo file nghe audio MP3 cho file zip:', audioErr);
   }
 
   return await zip.generateAsync({ type: 'blob' });
