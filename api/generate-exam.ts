@@ -61,80 +61,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const isFinalTerm = examType.includes('Cuối kỳ');
     const isMidTerm = examType.includes('Giữa kỳ');
 
+    let wordCountRange = '80-100';
+    if (grade.includes('6') || grade.includes('7')) {
+      wordCountRange = '60-80';
+    } else if (grade.includes('8')) {
+      wordCountRange = '80-100';
+    } else if (grade.includes('9')) {
+      wordCountRange = '100-120';
+    }
+
     let examStructureRules = '';
     if (isMidTerm) {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
-- Part 1. Listen and decide if each statement is True (T) or False (F). (1.25 pts) -> Gồm 5 câu (1-5), mỗi câu 0.25 điểm. Đáp án: A. True, B. False.
-- Part 2. Listen and circle the best answer A, B or C. You will listen TWICE. (1.25 pts) -> Gồm 5 câu (6-10), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 3. Choose A, B, or C to complete the following sentences. (3 pts) -> Gồm 12 câu (11-22), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+CẤU TRÚC ĐỀ KIỂM TRA GIỮA KỲ (TỔNG ĐIỂM VIẾT: 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
+- Part 1. Listen and decide if each statement is True (T) or False (F). You will listen TWICE. (1.25 pts) -> Gồm 5 câu (1-5), mỗi câu 0.25 điểm. Đáp án: A. T, B. F. Lời thoại bài nghe: Bài ĐỘC THOẠI GIỌNG NỮ (Monologue) dễ nghe.
+- Part 2. Listen to the conversation and choose the best answer A, B, or C. You will listen TWICE. (1.25 pts) -> Gồm 5 câu (6-10), mỗi câu 0.25 điểm. Đáp án: A, B, C. Lời thoại bài nghe: Bài HỘI THOẠI giữa 2 người (1 Nam, 1 Nữ, ví dụ: Tom & Mary), có ghi rõ nhân vật (Male/Female) để phát sinh giọng đọc luân phiên.
+- Part 3. Choose A, B, or C to complete the following sentences. (3.0 pts) -> Gồm 12 câu (11-22), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 4. Read the text. Then choose the best answer. (1.25 pts) -> Gồm 5 câu (23-27), mỗi câu 0.25 điểm. Đáp án: A, B, C.
 - Part 5. Read the passage and choose the best answer for each question. (1.25 pts) -> Gồm 5 câu (28-32), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 6. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Cung cấp 3 lựa chọn trắc nghiệm A, B, C chứa câu đã sắp xếp sẵn cho học sinh chọn.
-- Part 7. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
-- Part 8. Write a short paragraph (80 - 100 words) about a given topic. (1 pt) -> 1 câu tự luận viết đoạn văn (Câu 37).
+- Part 6. Choose the sentence that has the closest meaning to the root. (0.5 pt) -> Gồm 2 câu (33-34), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 7. Reorder the words/phrases to make completed sentences. (0.5 pts) -> Gồm 2 câu (35-36), mỗi câu 0.25 điểm. Đáp án: A, B, C.
+- Part 8. Write a short paragraph (${wordCountRange} words) about [specific topic]. (1.0 pt) -> 1 câu tự luận viết đoạn văn. TRƯỜNG type BẮT BUỘC LÀ "ESSAY". Tiêu đề section 'title' ghi gộp tên chủ đề cụ thể. Trường 'instructions' BẮT BUỘC ĐỂ TRỐNG (""). Trường 'prompt' CHỈ BẮT ĐẦU BẰNG "You should include:" và các câu gợi ý dàn ý, KHÔNG đánh số câu 37, KHÔNG ghi lặp "Write a paragraph...".
 `;
     } else if (isFinalTerm) {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN (2.0 ĐIỂM NÓI SẼ ĐƯỢC CHẤM RIÊNG):
-- Part 1. Listen and decide if each statement is True (T) or False (F). (1.0 pt) -> Gồm 5 câu (1-5), mỗi câu 0.2 điểm. Đáp án: A. True, B. False.
-- Part 2. Listen and choose the best option to complete each sentence. You will listen TWICE. (1.0 pt) -> Gồm 5 câu (6-10), mỗi câu 0.2 điểm. Đáp án: A, B, C.
+CẤU TRÚC ĐỀ KIỂM TRA CUỐI KỲ (TỔNG ĐIỂM VIẾT: 8.0 ĐIỂM - TỔNG ĐIỂM TOÀN BÀI CẢ NÓI LÀ 10.0 ĐIỂM) - BẮT BUỘC GỒM 8 PHẦN:
+- Part 1. Listen and decide if each statement is True (T) or False (F). You will listen TWICE. (1.0 pt) -> Gồm 5 câu (1-5), mỗi câu 0.2 điểm. Đáp án: A. T, B. F. Lời thoại bài nghe: Bài ĐỘC THOẠI GIỌNG NỮ (Monologue) dễ nghe.
+- Part 2. Listen to the conversation and choose the best answer A, B, or C. You will listen TWICE. (1.0 pt) -> Gồm 5 câu (6-10), mỗi câu 0.2 điểm. Đáp án: A, B, C. Lời thoại bài nghe: Bài HỘI THOẠI giữa 2 người (1 Nam, 1 Nữ, ví dụ: Tom & Mary), có ghi rõ nhân vật (Male/Female) để phát sinh giọng đọc luân phiên.
 - Part 3. Choose A, B, or C to complete the following sentences. (2.4 pts) -> Gồm 12 câu (11-22), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 4. Read the passage and choose the best answer. (1.0 pt) -> Gồm 5 câu (23-27), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 5. Read the passage and choose the best answer for each question. (1.0 pt) -> Gồm 5 câu (28-32), mỗi câu 0.2 điểm. Đáp án: A, B, C.
 - Part 6. Choose the sentence that has the closest meaning to the root. (0.4 pt) -> Gồm 2 câu (33-34), mỗi câu 0.2 điểm. Đáp án: A, B, C.
-- Part 7. Complete the second sentence so that it has the same meaning to the first. (0.4 pt) -> Gồm 2 câu (35-36), mỗi câu 0.2 điểm. Đáp án: A, B, C.
-- Part 8. Write a paragraph (80-100 words) about a given topic. (0.8 pt) -> 1 câu tự luận viết đoạn văn (Câu 37).
+- Part 7. Reorder the words/phrases to make completed sentences. (0.2 pt) -> Gồm 1 câu (câu 35), 0.2 điểm. Đáp án: A, B, C.
+- Part 8. Write a paragraph (${wordCountRange} words) about [specific topic]. (1.0 pt) -> 1 câu tự luận viết đoạn văn. TRƯỜNG type BẮT BUỘC LÀ "ESSAY". Tiêu đề section 'title' ghi gộp tên chủ đề cụ thể. Trường 'instructions' BẮT BUỘC ĐỂ TRỐNG (""). Trường 'prompt' CHỈ BẮT ĐẦU BẰNG "You should include:" và các câu gợi ý dàn ý, KHÔNG đánh số câu 36/37, KHÔNG ghi lặp "Write a paragraph...".
 `;
     } else {
       examStructureRules = `
-CẤU TRÚC ĐỀ THI 15 PHÚT (TỔNG ĐIỂM: 10.0 ĐIỂM):
+CẤU TRÚC ĐỀ KIỂM TRA 15 PHÚT (TỔNG ĐIỂM: 10.0 ĐIỂM):
 - Gồm 10 câu trắc nghiệm khách quan (1-10), mỗi câu 1.0 điểm. Lựa chọn đáp án A, B hoặc C.
 `;
     }
 
-    let templateContext = '';
-    if (uploadedTemplates && Array.isArray(uploadedTemplates) && uploadedTemplates.length > 0) {
-      templateContext = `
-=====================================================
-QUY TẮC BẮT BUỘC KHI CÓ MẪU ĐỀ TẢI LÊN (STRICT TEMPLATE ADHERENCE):
-Người dùng đã tải lên các tệp mẫu dưới đây. Bạn BẮT BUỘC phải phân tích và tuân thủ tuyệt đối cấu trúc của mẫu này:
-
-${uploadedTemplates
-  .map(
-    (t: any, idx: number) => {
-      const raw = t.content || '';
-      const truncated = raw.length > 5000 ? raw.slice(0, 5000) + '\n...[Nội dung tệp mẫu quá dài đã được tối ưu hóa]...' : raw;
-      return `--- MẪU ${idx + 1}: ${t.name} (Loại: ${t.type}) ---\n${truncated}`;
-    }
-  )
-  .join('\n\n')}
-
-YÊU CẦU BẮT BUỘC KHI TẠO ĐỀ THI TỪ MẪU:
-1. ĐỦ CÁC PART / SECTION: Phải có đầy đủ tất cả các Part/Section như mẫu đưa lên (VD: PART 1, PART 2, PART 3, PART 4... hoặc SECTION A, SECTION B...).
-2. ĐỦ SỐ LƯỢNG CÂU HỎI TRONG MỖI PART: Đếm chính xác số câu hỏi ở từng Part trong mẫu và tạo ĐÚNG số lượng câu hỏi đó cho từng Part tương ứng trong đề thi mới.
-3. ĐÁNH SỐ THỰC TẾ THEO MẪU: Đánh số câu hỏi liên tục hoặc theo kí hiệu phần (VD: 1, 2, 3... hoặc Question 1, Question 2...).
-4. SỐ LƯỢNG ĐÁP ÁN MỖI CÂU (2 HOẶC 3 ĐÁP ÁN - TUYỆT ĐỐI KHÔNG CÓ ĐÁP ÁN D): Mỗi câu trắc nghiệm chỉ được có tối đa 3 lựa chọn (A, B hoặc A, B, C). Không tạo đáp án D cho bất kỳ câu hỏi nào.
-5. TỰ NHẬN DIỆN VÀ GHI ĐÚNG LOẠI BÀI KIỂM TRA: Tự nhận diện đúng loại bài kiểm tra (15 phút, Giữa kỳ 1, Giữa kỳ 2, Cuối kỳ 1, Cuối kỳ 2) từ tiêu đề tệp mẫu để ghi chính xác vào tiêu đề đề thi.
-=====================================================
-`;
-    }
-
-    const systemPrompt = `Bạn là một Chuyên gia Biên soạn Đề thi và Khảo thí Tiếng Anh THCS uy tín theo chương trình sách giáo khoa Global Success của Bộ Giáo dục và Đào tạo Việt Nam.
+    const systemPrompt = `Bạn là một Chuyên gia Biên soạn Đề kiểm tra và Khảo thí Tiếng Anh THCS uy tín theo chương trình sách giáo khoa Global Success của Bộ Giáo dục và Đào tạo Việt Nam.
 Nhiệm vụ của bạn là sinh BỘ ĐỀ KIỂM TRA CHUẨN ĐẦY ĐỦ gồm:
-1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề thi (${isFinalTerm ? '8.0' : '10.0'} điểm).
+1. Bảng Ma trận đề kiểm tra (Matrix) phân bổ đúng các mức độ: Nhận biết (40%), Thông hiểu (30%), Vận dụng (20%), Vận dụng cao (10%). Tổng điểm của ma trận phải khớp với tổng điểm viết của đề kiểm tra (${isFinalTerm ? '8.0' : '10.0'} điểm).
 2. Bảng Bản đặc tả đề kiểm tra (Specifications) chi tiết chuẩn Bộ GDĐT.
-3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới.
-4. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu.
+3. Đề kiểm tra Mã đề 001 gồm đầy đủ các phần theo cấu trúc chi tiết bên dưới. TUYỆT ĐỐI KHÔNG tạo bất kỳ section nào rỗng hoặc không chứa câu hỏi. TUYỆT ĐỐI KHÔNG đưa tên trường hoặc tiêu đề bài kiểm tra (như "TRƯỜNG THCS...", "ĐỀ KIỂM TRA GIỮA KỲ...", "MID-TERM TEST...", "FINAL-TERM TEST...", "GRADE 6/7/8/9...", "GLOBAL SUCCESS...", "Time allowed:...", "THỜI GIAN LÀM BÀI...", "MÃ ĐỀ: 001...") vào bất kỳ trường title, instructions, readingPassage hay prompt nào của bất kỳ section nào. Các section BẮT BUỘC chỉ được bắt đầu bằng tiêu đề Part (như "Part 1. Listen...", "Part 2. Listen...", "Part 3. Choose...").
+4. Kịch bản bài nghe (audioScript): BẮT BUỘC ghi đầy đủ kịch bản 2 phần. Phần Part 1 ghi "--- PART 1: MONOLOGUE ---" (Bài độc thoại giọng nữ), Phần Part 2 ghi "--- PART 2: DIALOGUE ---" (Bài hội thoại 1 Nam 1 Nữ, ví dụ: Tom (Male): ..., Mary (Female): ...).
+5. Đáp án và Hướng dẫn chấm chi tiết kèm biểu điểm cho từng câu. Đặc biệt: đối với phần nghe phải có đầy đủ đáp án chuẩn trong bảng key; đối với phần tự luận viết đoạn văn (Writing paragraph) ở câu viết cuối cùng, bạn BẮT BUỘC phải viết một bài văn/đoạn văn mẫu (Sample Essay) hoàn chỉnh khoảng ${wordCountRange} từ và đặt trong trường 'explanation' của câu hỏi đó để làm đáp án mẫu cho học sinh tham khảo.
+6. Luôn sinh ra 3 chủ đề nói (speakingTopics) bám sát các Unit học sinh đã học, mỗi chủ đề gồm: tên chủ đề (topicName), mô tả tình huống bằng tiếng Anh (description), 3 câu hỏi gợi ý bằng tiếng Anh (guideQuestions) và 3 câu trả lời mẫu gợi ý tương ứng (suggestedAnswers).
 
-YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG ĐÁP ÁN TRẮC NGHIỆM:
-- Tất cả các câu hỏi trắc nghiệm trong đề thi chỉ được phép có từ 2 đến 3 đáp án lựa chọn (True/False là 2 đáp án A/B; các câu MCQ khác là 3 đáp án A/B/C).
+YÊU CẦU BẮT BUỘC VỀ SỐ LƯỢNG VÀ ĐỊNH DẠNG ĐÁP ÁN TRẮC NGHIỆM:
+- Tất cả các câu hỏi trắc nghiệm trong đề kiểm tra chỉ được phép có từ 2 đến 3 đáp án lựa chọn (True/False là 2 đáp án A/B; các câu MCQ khác là 3 đáp án A/B/C).
 - TUYỆT ĐỐI KHÔNG ĐƯỢC có đáp án thứ 4 (không có đáp án D).
+- Đối với câu hỏi Đúng/Sai (True/False), hai lựa chọn đáp án bắt buộc phải để dưới dạng viết tắt:
+  + Lựa chọn A: "T" (ví dụ: {"key": "A", "text": "T"})
+  (Tức là không viết nguyên chữ "True"/"False" hay "Đúng"/"Sai" ở phần text của options).
 
 Yêu cầu cấu trúc và biểu điểm bắt buộc:
 ${examStructureRules}
 
 Yêu cầu nội dung:
+- Các câu hỏi từ vựng phải thật ngắn gọn để toàn bộ câu hỏi và đáp án có thể hiển thị trên cùng 1 dòng.
 - Khối lớp: ${grade} (Global Success)
 - Loại đề: ${examType}
 - Thời gian làm bài: ${adminInfo?.durationMinutes || 45} phút

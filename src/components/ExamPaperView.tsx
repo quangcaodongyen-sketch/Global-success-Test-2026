@@ -378,9 +378,30 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
 
             return safeSections.map((section, sIdx) => {
               const rawQuestions = Array.isArray(section.questions) ? section.questions : [];
-              const cleanTitle = cleanHeaderLines(section.title || '');
-              const cleanInstructions = cleanHeaderLines(section.instructions || '');
+              let cleanTitle = cleanHeaderLines(section.title || '');
+              let cleanInstructions = cleanHeaderLines(section.instructions || '');
               const cleanPassage = cleanHeaderLines(section.readingPassage || '');
+
+              const hasEssay = rawQuestions.some((q) => q.type === 'ESSAY');
+              if (hasEssay) {
+                const lowerInst = cleanInstructions.toLowerCase();
+                if (lowerInst.includes('write a paragraph') || lowerInst.includes('following topic')) {
+                  cleanInstructions = '';
+                }
+
+                const essayQ = rawQuestions.find((q) => q.type === 'ESSAY');
+                if (essayQ && essayQ.prompt) {
+                  const cleanedEssayPrompt = essayQ.prompt.replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '').trim();
+                  const topicMatch = cleanedEssayPrompt.match(/about\s+([^.\n]+)/i);
+                  if (topicMatch) {
+                    let topicStr = topicMatch[1].trim();
+                    topicStr = topicStr.split(/\byou\s+should\b|\binclude\b/i)[0].trim();
+                    if (topicStr && cleanTitle.toLowerCase().includes('a given topic')) {
+                      cleanTitle = cleanTitle.replace(/a given topic/i, topicStr);
+                    }
+                  }
+                }
+              }
 
               if (rawQuestions.length === 0 && !cleanTitle && !cleanInstructions) {
                 return null;

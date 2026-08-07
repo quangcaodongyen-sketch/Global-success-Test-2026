@@ -117,24 +117,44 @@ export function cleanHeaderLines(text: string): string {
       return true;
     }
 
-    // Identify header keyword patterns
+    // Identify administrative header keyword patterns (Vietnamese & English)
     const isHeaderLine =
       upper.startsWith('UBND') ||
       upper.startsWith('SỞ GIÁO DỤC') ||
       upper.startsWith('PHÒNG GIÁO DỤC') ||
       upper.startsWith('TRƯỜNG THCS') ||
       upper.startsWith('TRƯỜNG THPT') ||
+      upper.startsWith('SCHOOL:') ||
       upper.includes('BÀI KIỂM TRA') ||
       upper.includes('ĐỀ KIỂM TRA') ||
       upper.includes('GIỮA KỲ') ||
       upper.includes('CUỐI KỲ') ||
       upper.includes('KIỂM TRA 15') ||
+      upper.includes('MID-TERM TEST') ||
+      upper.includes('MID TERM TEST') ||
+      upper.includes('FINAL-TERM TEST') ||
+      upper.includes('FINAL TERM TEST') ||
+      upper.includes('SEMESTER TEST') ||
+      upper.includes('ENGLISH TEST') ||
+      upper.includes('ENGLISH 6') ||
+      upper.includes('ENGLISH 7') ||
+      upper.includes('ENGLISH 8') ||
+      upper.includes('ENGLISH 9') ||
+      upper.includes('GRADE 6') ||
+      upper.includes('GRADE 7') ||
+      upper.includes('GRADE 8') ||
+      upper.includes('GRADE 9') ||
+      upper.includes('GLOBAL SUCCESS') ||
       upper.includes('NĂM HỌC:') ||
       upper.includes('MÔN: TIẾNG ANH') ||
-      upper.includes('GLOBAL SUCCESS') ||
       upper.includes('THỜI GIAN LÀM BÀI') ||
       upper.includes('KHÔNG KỂ THỜI GIAN') ||
+      upper.includes('TIME ALLOWED') ||
+      upper.includes('DURATION:') ||
+      upper.includes('TIME:') ||
       upper.includes('MÃ ĐỀ:') ||
+      upper.includes('CODE:') ||
+      upper.includes('TEST CODE:') ||
       upper.includes('HỌ VÀ TÊN') ||
       upper.includes('FULL NAME:') ||
       upper.includes('CLASS:');
@@ -172,9 +192,32 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
   safeSections.forEach((section, sIdx) => {
     const rawQuestions = Array.isArray(section.questions) ? section.questions : [];
-    const cleanTitle = cleanHeaderLines(section.title || '');
-    const cleanInstructions = cleanHeaderLines(section.instructions || '');
+    let cleanTitle = cleanHeaderLines(section.title || '');
+    let cleanInstructions = cleanHeaderLines(section.instructions || '');
     const cleanPassage = cleanHeaderLines(section.readingPassage || '');
+
+    const hasEssay = rawQuestions.some((q) => q.type === 'ESSAY');
+    if (hasEssay) {
+      // Suppress instructions if it just repeats title or says "Write a paragraph..."
+      const lowerInst = cleanInstructions.toLowerCase();
+      if (lowerInst.includes('write a paragraph') || lowerInst.includes('following topic')) {
+        cleanInstructions = '';
+      }
+
+      // Extract specific topic from essay prompt if cleanTitle is generic ("a given topic")
+      const essayQ = rawQuestions.find((q) => q.type === 'ESSAY');
+      if (essayQ && essayQ.prompt) {
+        const cleanedEssayPrompt = essayQ.prompt.replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '').trim();
+        const topicMatch = cleanedEssayPrompt.match(/about\s+([^.\n]+)/i);
+        if (topicMatch) {
+          let topicStr = topicMatch[1].trim();
+          topicStr = topicStr.split(/\byou\s+should\b|\binclude\b/i)[0].trim();
+          if (topicStr && cleanTitle.toLowerCase().includes('a given topic')) {
+            cleanTitle = cleanTitle.replace(/a given topic/i, topicStr);
+          }
+        }
+      }
+    }
 
     // Completely skip empty section or header-only section without questions
     if (rawQuestions.length === 0 && !cleanTitle && !cleanInstructions) {
