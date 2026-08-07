@@ -19,7 +19,7 @@ export function getSilentMp3ArrayBuffer(durationSec: number): ArrayBuffer {
 }
 
 /**
- * Fetches raw MP3 audio stream from StreamElements Amazon Polly TTS API.
+ * Fetches raw MP3 audio stream from StreamElements Amazon Polly TTS API with a 3.5s timeout per request.
  */
 async function fetchTtsMp3ArrayBuffer(text: string, voice: string): Promise<ArrayBuffer> {
   const cleanText = text
@@ -32,16 +32,22 @@ async function fetchTtsMp3ArrayBuffer(text: string, voice: string): Promise<Arra
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
     const url = `https://api.streamelements.com/kappa/v2/speech?voice=${encodeURIComponent(
       voice
     )}&text=${encodeURIComponent(cleanText)}`;
-    const response = await fetch(url);
+    
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       throw new Error(`TTS API HTTP error ${response.status}`);
     }
     return await response.arrayBuffer();
   } catch (err) {
-    console.warn(`[AudioGenerator] TTS fetch failed for voice ${voice}:`, err);
+    console.warn(`[AudioGenerator] TTS fetch fallback for voice ${voice}:`, err);
     return getSilentMp3ArrayBuffer(1.5);
   }
 }
@@ -128,7 +134,7 @@ export interface GeneratedExamAudioResult {
 }
 
 /**
- * Generates Part 1 (T/F female monologue) and Part 2 (A/B/C male/female dialogue) MP3 blobs for an ExamPaper.
+ * Generates Part 1 (T/F female monologue) and Part 2 (A/B/C male/female dialogue) MP3 blobs concurrently.
  */
 export async function generateExamAudioBlobs(paper: ExamPaper): Promise<GeneratedExamAudioResult> {
   const { part1Text, part2Lines } = parseAudioScript(paper.audioScript || '');
@@ -143,15 +149,48 @@ export async function generateExamAudioBlobs(paper: ExamPaper): Promise<Generate
   const silence3s = getSilentMp3ArrayBuffer(3.0);
   const silence04s = getSilentMp3ArrayBuffer(0.4);
 
-  // --- PART 1 AUDIO ---
-  const p1Intro = await fetchTtsMp3ArrayBuffer(
+  // Fetch all TTS audio lines concurrently in parallel
+  const p1IntroPromise = fetchTtsMp3ArrayBuffer(
     "Part 1: Listen to the passage and decide whether each statement is True or False. You will listen TWICE.",
     FEMALE_VOICE
   );
-  const p1Prompt = await fetchTtsMp3ArrayBuffer("Listen.", FEMALE_VOICE);
-  const p1Content = await fetchTtsMp3ArrayBuffer(part1Text, FEMALE_VOICE);
-  const p1RepeatPrompt = await fetchTtsMp3ArrayBuffer("Now listen again.", FEMALE_VOICE);
+  const p1PromptPromise = fetchTtsMp3ArrayBuffer("Listen.", FEMALE_VOICE);
+  const p1ContentPromise = fetchTtsMp3ArrayBuffer(part1Text, FEMALE_VOICE);
+  const p1RepeatPromptPromise = fetchTtsMp3ArrayBuffer("Now listen again.", FEMALE_VOICE);
 
+  const p2IntroPromise = fetchTtsMp3ArrayBuffer(
+    "Part 2: Listen to the conversation and choose the best answer A, B, or C for each question. You will listen TWICE.",
+    FEMALE_VOICE
+  );
+  const p2PromptPromise = fetchTtsMp3ArrayBuffer("Listen.", FEMALE_VOICE);
+  const p2RepeatPromptPromise = fetchTtsMp3ArrayBuffer("Now listen again.", FEMALE_VOICE);
+
+  const dialogueLinePromises = part2Lines.map((line) => {
+    const voice = line.speaker === 'male' ? MALE_VOICE : FEMALE_VOICE;
+    return fetchTtsMp3ArrayBuffer(line.text, voice);
+  });
+
+  const [
+    p1Intro,
+    p1Prompt,
+    p1Content,
+    p1RepeatPrompt,
+    p2Intro,
+    p2Prompt,
+    p2RepeatPrompt,
+    ...dialogueLineBuffers
+  ] = await Promise.all([
+    p1IntroPromise,
+    p1PromptPromise,
+    p1ContentPromise,
+    p1RepeatPromptPromise,
+    p2IntroPromise,
+    p2PromptPromise,
+    p2RepeatPromptPromise,
+    ...dialogueLinePromises,
+  ]);
+
+  // --- PART 1 AUDIO ---
   const part1Chunks: ArrayBuffer[] = [
     p1Intro,
     silence15s,
@@ -164,24 +203,14 @@ export async function generateExamAudioBlobs(paper: ExamPaper): Promise<Generate
     p1Content,
     silence3s,
   ];
-
   const part1Blob = new Blob(part1Chunks, { type: 'audio/mp3' });
 
   // --- PART 2 AUDIO ---
-  const p2Intro = await fetchTtsMp3ArrayBuffer(
-    "Part 2: Listen to the conversation and choose the best answer A, B, or C for each question. You will listen TWICE.",
-    FEMALE_VOICE
-  );
-  const p2Prompt = await fetchTtsMp3ArrayBuffer("Listen.", FEMALE_VOICE);
-  const p2RepeatPrompt = await fetchTtsMp3ArrayBuffer("Now listen again.", FEMALE_VOICE);
-
   const dialogueChunks: ArrayBuffer[] = [];
-  for (const line of part2Lines) {
-    const voice = line.speaker === 'male' ? MALE_VOICE : FEMALE_VOICE;
-    const buf = await fetchTtsMp3ArrayBuffer(line.text, voice);
+  dialogueLineBuffers.forEach((buf) => {
     dialogueChunks.push(buf);
     dialogueChunks.push(silence04s);
-  }
+  });
 
   const part2Chunks: ArrayBuffer[] = [
     p2Intro,
@@ -195,7 +224,6 @@ export async function generateExamAudioBlobs(paper: ExamPaper): Promise<Generate
     ...dialogueChunks,
     silence3s,
   ];
-
   const part2Blob = new Blob(part2Chunks, { type: 'audio/mp3' });
 
   // --- FULL EXAM AUDIO ---

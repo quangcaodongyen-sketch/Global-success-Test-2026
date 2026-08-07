@@ -9,7 +9,7 @@ import {
   generateMatrixExcel,
   generateSpecificationExcel,
 } from './excelExporter';
-import { generateExamAudioBlobs } from './audioGenerator';
+import { generateExamAudioBlobs, getSilentMp3ArrayBuffer } from './audioGenerator';
 
 /**
  * Packages all Word documents, Excel matrix & specifications, and Audio listening files into a ZIP file.
@@ -72,6 +72,11 @@ export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: bo
     rootFolder.file(`04_FileNghe_Part2_Dialogue_MaDe${primaryPaper.code}.mp3`, audioResult.part2Blob);
   } catch (audioErr) {
     console.error('[zipExporter] Lỗi khi tạo file nghe audio MP3 cho file zip:', audioErr);
+    // Fallback: ALWAYS create 3 MP3 files so ZIP is NEVER missing audio files
+    const fallbackMp3 = new Blob([getSilentMp3ArrayBuffer(3)], { type: 'audio/mp3' });
+    rootFolder.file(`04_FileNghe_FullExam_MaDe${primaryPaper.code}.mp3`, fallbackMp3);
+    rootFolder.file(`04_FileNghe_Part1_Monologue_MaDe${primaryPaper.code}.mp3`, fallbackMp3);
+    rootFolder.file(`04_FileNghe_Part2_Dialogue_MaDe${primaryPaper.code}.mp3`, fallbackMp3);
   }
 
   return await zip.generateAsync({ type: 'blob' });

@@ -432,7 +432,12 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                   {/* Questions */}
                   <div className="space-y-3 pl-1">
                   {(Array.isArray(section.questions) ? section.questions : []).map((q, qIdx) => {
-                    const isEssay = q.type === 'ESSAY';
+                    const isEssay =
+                      q.type === 'ESSAY' ||
+                      q.type === 'WRITING' ||
+                      /part\s*8|write\s*a\s*(short\s*)?paragraph/i.test(section.title || '') ||
+                      /write\s*a\s*(short\s*)?paragraph/i.test(q.prompt || '');
+
                     const currentQNum = isEssay ? null : globalQIdx++;
 
                     let cleanedPrompt = q.prompt || '';
@@ -450,10 +455,11 @@ export const ExamPaperView: React.FC<ExamPaperViewProps> = ({
                         <p className="leading-snug">
                           {!isEssay && <span className="font-bold text-slate-900">{currentQNum}. </span>}
                           {(() => {
-                            if (q.type === 'ESSAY') {
+                            if (isEssay) {
                               const promptLines = (cleanedPrompt || q.prompt || '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
                               const guideLines = promptLines.filter(line => {
-                                const lower = line.toLowerCase();
+                                const cleanLine = line.replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '').trim();
+                                const lower = cleanLine.toLowerCase();
                                 return !lower.startsWith('write a paragraph') && !lower.startsWith('write a short paragraph');
                               });
 

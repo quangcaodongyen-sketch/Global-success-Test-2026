@@ -291,35 +291,28 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
     // Questions
     rawQuestions.forEach((q) => {
-      const isEssay = q.type === 'ESSAY';
+      const isEssay =
+        q.type === 'ESSAY' ||
+        q.type === 'WRITING' ||
+        /part\s*8|write\s*a\s*(short\s*)?paragraph/i.test(section.title || '') ||
+        /write\s*a\s*(short\s*)?paragraph/i.test(q.prompt || '');
+
       const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
       const cleanedPromptRaw = cleanHeaderLines(q.prompt || '');
 
       if (isEssay) {
-        // Strip question numbers like "37. ", "Question 37:", or duplicate title sentences
+        // Strip question numbers like "37. ", "Question 37:", "Câu 37:" from prompt
         let cleanedPrompt = (q.prompt || '')
           .replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '')
           .trim();
 
-        // Extract topic name if present (e.g. "about your favorite hobby")
-        let topicName = '';
-        const topicMatch = cleanedPrompt.match(/about\s+([^.\n]+)/i);
-        if (topicMatch) {
-          topicName = topicMatch[1].trim();
-        }
-
-        // If section.title contains "a given topic", replace it with the specific topic name
-        if (topicName && section.title && section.title.toLowerCase().includes('a given topic')) {
-          const updatedTitle = section.title.replace(/a given topic/i, topicName);
-          // Update the last paragraph in children (which was displayTitle) if possible, or print clean guide lines
-        }
-
         // Split guide lines (e.g., "You should include:", "What your hobby is.", etc.)
         const promptLines = cleanedPrompt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-        // Filter out line if it just repeats "Write a paragraph..." title
+        // Filter out line if it repeats "Write a paragraph..." title
         const guideLines = promptLines.filter(line => {
-          const lower = line.toLowerCase();
+          const cleanLine = line.replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '').trim();
+          const lower = cleanLine.toLowerCase();
           return !lower.startsWith('write a paragraph') && !lower.startsWith('write a short paragraph');
         });
 
