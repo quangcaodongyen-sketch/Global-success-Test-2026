@@ -111,9 +111,6 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
     new Paragraph({ spacing: { after: 150 } }),
 
-    // Student Info Box
-    createStudentInfoTable(paper.examType),
-
     new Paragraph({ spacing: { after: 250 } }),
   ];
 
@@ -121,8 +118,15 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
   let globalQuestionIndex = 1;
   const safeSections = Array.isArray(paper.sections) ? paper.sections : [];
   const validSections = safeSections.filter(s => {
-    // Prevent AI-generated title header section
-    if ((!s.questions || s.questions.length === 0) && s.title && s.title.toUpperCase().includes('ĐỀ KIỂM TRA')) {
+    // Prevent AI-generated empty title header section or redundant headers
+    if (!s.questions || s.questions.length === 0) return false;
+    const titleUpper = (s.title || '').toUpperCase();
+    if (
+      titleUpper.includes('ĐỀ KIỂM TRA') ||
+      titleUpper.includes('BÀI KIỂM TRA') ||
+      titleUpper.includes('THỜI GIAN LÀM BÀI') ||
+      titleUpper.includes('TRƯỜNG THCS')
+    ) {
       return false;
     }
     return true;
@@ -195,8 +199,18 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
       const qNumText = isEssay ? "" : `${globalQuestionIndex}. `;
 
       if (isEssay) {
-        const promptLines = (q.prompt || '').split('\n');
-        const firstLine = promptLines[0];
+        // Strip question numbers like "37. ", "Question 37:", or duplicate instruction headers from essay prompt
+        let cleanedPrompt = (q.prompt || '')
+          .replace(/^(câu\s*\d+|question\s*\d+|\d+[\.\:]\s*)+/i, '')
+          .trim();
+
+        // If prompt repeats section instructions, strip that line
+        if (section.instructions && cleanedPrompt.toLowerCase().startsWith(section.instructions.toLowerCase().slice(0, 20))) {
+          cleanedPrompt = cleanedPrompt.substring(section.instructions.length).trim();
+        }
+
+        const promptLines = (cleanedPrompt || q.prompt || '').split('\n');
+        const firstLine = promptLines[0] || '';
         const wordCountRegex = /(\([\d\-\s\.]+\s*words\))/i;
         const match = firstLine.match(wordCountRegex);
 
@@ -213,8 +227,6 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
             new TextRun({ text: after, bold: true, size: 28, font: FONT_FAMILY })
           );
         } else {
-          // If the first line doesn't have word count, it's probably just a suggestion (e.g. "- Where is it?")
-          // so we don't need to make it bold like a title.
           childrenRuns.push(
             new TextRun({ text: firstLine, size: 26, font: FONT_FAMILY })
           );
@@ -240,6 +252,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
 
         if (promptLines.length > 1) {
           for (let i = 1; i < promptLines.length; i++) {
+            if (!promptLines[i].trim()) continue;
             children.push(
               new Paragraph({
                 spacing: { before: 60, after: 60 },
@@ -253,22 +266,6 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
               })
             );
           }
-        }
-
-        // Add 8 dotted lines for student's writing area
-        for (let i = 0; i < 8; i++) {
-          children.push(
-            new Paragraph({
-              spacing: { before: 120, after: 120 },
-              children: [
-                new TextRun({
-                  text: '.......................................................................................................................................',
-                  size: 26,
-                  font: FONT_FAMILY,
-                }),
-              ],
-            })
-          );
         }
       } else {
         children.push(
@@ -310,7 +307,7 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
           (opt) => `${opt.key || ''}. ${opt.text || ''}`
         );
 
-        // Display 2x2 or 4 across
+        // Display 2x2 or 3/4 across
         children.push(
           new Paragraph({
             spacing: { after: 100 },
@@ -325,35 +322,39 @@ export async function generateExamPaperDocx(paper: ExamPaper, showCognition: boo
           })
         );
       } else if (q.type === 'REWRITE' || q.type === 'FILL_IN') {
-        children.push(
-          new Paragraph({
-            spacing: { after: 150 },
-            children: [
-              new TextRun({
-                text: `👉 Trả lời: ..........................................................................................................................................................`,
-                size: 26,
-                italics: true,
-                font: FONT_FAMILY,
-              }),
-            ],
-          })
-        );
-      } else if (q.type === 'ESSAY') {
-        const dottedLine = '..........................................................................................................................................................................';
-        const linesText = Array(8).fill(dottedLine).join('\n');
-        children.push(
-          new Paragraph({
-            spacing: { after: 200 },
-            children: [
-              new TextRun({
-                text: linesText,
-                size: 26,
-                italics: true,
-                font: FONT_FAMILY,
-              }),
-            ],
-          })
-        );
+        const promptHasDots = (q.prompt || '').includes('....');
+        if (!promptHasDots) {
+          children.push(
+            new Paragraph({
+              spacing: { after: 150 },
+              children: [
+                new TextRun({
+                  text: `👉 Trả lời: ..........................................................................................................................................................`,
+                  size: 26,
+                  italics: true,
+                  font: FONT_FAMILY,
+                }),
+              ],
+            })
+          );
+        }
+      } else if (q.type === 'ESSAY' && (!q.options || q.options.length === 0)) {
+        // Render 4 clean dotted lines for essay writing area (instead of 16 lines)
+        for (let i = 0; i < 4; i++) {
+          children.push(
+            new Paragraph({
+              spacing: { before: 100, after: 100 },
+              children: [
+                new TextRun({
+                  text: '..........................................................................................................................................................................',
+                  size: 24,
+                  color: '94A3B8',
+                  font: FONT_FAMILY,
+                }),
+              ],
+            })
+          );
+        }
       }
     });
   });

@@ -9,10 +9,10 @@ import {
   generateMatrixExcel,
   generateSpecificationExcel,
 } from './excelExporter';
+import { generateExamAudioBlobs } from './audioGenerator';
 
 /**
- * Packages all Word documents into a ZIP file following Decree 30/2020/NĐ-CP
- * administrative formatting and MOET exam filing rules.
+ * Packages all Word documents, Excel matrix & specifications, and Audio listening files into a ZIP file.
  */
 export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: boolean = true): Promise<Blob> {
   const zip = new JSZip();
@@ -24,7 +24,7 @@ export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: bo
   const primaryPaper = suite.papers[0];
   const gradeClean = (primaryPaper.grade || '').replace(/\s+/g, '');
   const examTypeClean = (primaryPaper.examType || '').replace(/\s+/g, '_');
-  const schoolClean = primaryPaper.adminInfo.schoolName
+  const schoolClean = (primaryPaper.schoolName || primaryPaper.adminInfo?.schoolName || '')
     .replace(/TRƯỜNG\s+THCS\s+/i, '')
     .replace(/\s+/g, '_');
 
@@ -64,5 +64,16 @@ export async function exportExamSuiteZip(suite: FullExamSuite, showCognition: bo
     rootFolder.file(`03_DapAn_HuongDanCham_MaDe${paper.code}.docx`, answerKeyBlob);
   }
 
+  // 4. Audio files (Part 1 monologue, Part 2 dialogue, Full exam audio)
+  try {
+    const audioResult = await generateExamAudioBlobs(primaryPaper);
+    rootFolder.file(`04_FileNghe_FullExam_MaDe${primaryPaper.code}.wav`, audioResult.fullExamBlob);
+    rootFolder.file(`04_FileNghe_Part1_Monologue_MaDe${primaryPaper.code}.wav`, audioResult.part1Blob);
+    rootFolder.file(`04_FileNghe_Part2_Dialogue_MaDe${primaryPaper.code}.wav`, audioResult.part2Blob);
+  } catch (audioErr) {
+    console.warn('[zipExporter] Lỗi khi tạo file nghe audio cho file zip:', audioErr);
+  }
+
   return await zip.generateAsync({ type: 'blob' });
 }
+
